@@ -30,6 +30,23 @@ app é pensado para celular.
 - Agrupamento de livros por categoria (histórico, poético, evangelhos,
   cartas, profético etc.), não só por Antigo/Novo Testamento como hoje.
 
+## Backend com Supabase e sincronização de conta
+
+Hoje tudo é local (SQLite via `sqflite`, sem conta de usuário). Para dar
+suporte a login e sincronizar o progresso entre aparelhos, falta:
+
+- Criar o banco de dados no Supabase (schema equivalente a `books`/`chapters`
+  hoje local, mais tabela de usuários/progresso por conta).
+- Login com email e senha (Supabase Auth).
+- Integração dos registros do app (capítulos lidos, notas, streak) com o
+  banco do Supabase — hoje só grava no SQLite local.
+- API backend em Express rodando no servidor do Supabase, para mediar essas
+  operações em vez do app falar direto com o banco.
+- Tornar as operações do app (marcar capítulo lido, salvar nota, etc.)
+  assíncronas/otimistas na UI, para não recarregar a tela bruscamente a cada
+  ação (hoje cada `setChapterRead`/`setChapterNote` dispara
+  `notifyListeners()` e refaz o `FutureBuilder` da tela inteira).
+
 ## Aviso de SQL
 
 Log do dispositivo mostrou `W/SQLiteLog: double-quoted string literal: ""`
