@@ -44,7 +44,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(Icons.menu_book_rounded, size: 72, color: Theme.of(context).colorScheme.primary),
+              Image.asset('assets/images/logo.png', width: 96, height: 96),
               const SizedBox(height: 24),
               Text(
                 'Bíblia em 1 ano',

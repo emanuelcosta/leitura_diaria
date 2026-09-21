@@ -1,4 +1,4 @@
-package com.example.leitura_diaria
+package com.emanuel.leituradiaria
 
 import io.flutter.embedding.android.FlutterActivity
 
