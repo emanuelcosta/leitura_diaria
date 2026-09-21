@@ -1,0 +1,3547 @@
+{
+  "books": [
+    {
+      "id": "genesis",
+      "name": "Gênesis",
+      "testament": "AT",
+      "track": 2,
+      "order": 1,
+      "chapters": 50
+    },
+    {
+      "id": "exodo",
+      "name": "Êxodo",
+      "testament": "AT",
+      "track": 2,
+      "order": 2,
+      "chapters": 40
+    },
+    {
+      "id": "levitico",
+      "name": "Levítico",
+      "testament": "AT",
+      "track": 2,
+      "order": 3,
+      "chapters": 27
+    },
+    {
+      "id": "numeros",
+      "name": "Números",
+      "testament": "AT",
+      "track": 2,
+      "order": 4,
+      "chapters": 36
+    },
+    {
+      "id": "deuteronomio",
+      "name": "Deuteronômio",
+      "testament": "AT",
+      "track": 2,
+      "order": 5,
+      "chapters": 34
+    },
+    {
+      "id": "josue",
+      "name": "Josué",
+      "testament": "AT",
+      "track": 2,
+      "order": 6,
+      "chapters": 24
+    },
+    {
+      "id": "juizes",
+      "name": "Juízes",
+      "testament": "AT",
+      "track": 2,
+      "order": 7,
+      "chapters": 21
+    },
+    {
+      "id": "rute",
+      "name": "Rute",
+      "testament": "AT",
+      "track": 2,
+      "order": 8,
+      "chapters": 4
+    },
+    {
+      "id": "1samuel",
+      "name": "I Samuel",
+      "testament": "AT",
+      "track": 2,
+      "order": 9,
+      "chapters": 31
+    },
+    {
+      "id": "2samuel",
+      "name": "II Samuel",
+      "testament": "AT",
+      "track": 2,
+      "order": 10,
+      "chapters": 24
+    },
+    {
+      "id": "1reis",
+      "name": "I Reis",
+      "testament": "AT",
+      "track": 2,
+      "order": 11,
+      "chapters": 22
+    },
+    {
+      "id": "2reis",
+      "name": "II Reis",
+      "testament": "AT",
+      "track": 2,
+      "order": 12,
+      "chapters": 25
+    },
+    {
+      "id": "1cronicas",
+      "name": "I Crônicas",
+      "testament": "AT",
+      "track": 2,
+      "order": 13,
+      "chapters": 29
+    },
+    {
+      "id": "2cronicas",
+      "name": "II Crônicas",
+      "testament": "AT",
+      "track": 2,
+      "order": 14,
+      "chapters": 36
+    },
+    {
+      "id": "esdras",
+      "name": "Esdras",
+      "testament": "AT",
+      "track": 2,
+      "order": 15,
+      "chapters": 10
+    },
+    {
+      "id": "neemias",
+      "name": "Neemias",
+      "testament": "AT",
+      "track": 2,
+      "order": 16,
+      "chapters": 13
+    },
+    {
+      "id": "ester",
+      "name": "Ester",
+      "testament": "AT",
+      "track": 2,
+      "order": 17,
+      "chapters": 10
+    },
+    {
+      "id": "jo",
+      "name": "Jó",
+      "testament": "AT",
+      "track": 3,
+      "order": 18,
+      "chapters": 42
+    },
+    {
+      "id": "salmos",
+      "name": "Salmos",
+      "testament": "AT",
+      "track": 3,
+      "order": 19,
+      "chapters": 150
+    },
+    {
+      "id": "proverbios",
+      "name": "Provérbios",
+      "testament": "AT",
+      "track": 3,
+      "order": 20,
+      "chapters": 31
+    },
+    {
+      "id": "eclesiastes",
+      "name": "Eclesiastes",
+      "testament": "AT",
+      "track": 3,
+      "order": 21,
+      "chapters": 12
+    },
+    {
+      "id": "cantares",
+      "name": "Cantares",
+      "testament": "AT",
+      "track": 3,
+      "order": 22,
+      "chapters": 8
+    },
+    {
+      "id": "isaias",
+      "name": "Isaías",
+      "testament": "AT",
+      "track": 2,
+      "order": 23,
+      "chapters": 66
+    },
+    {
+      "id": "jeremias",
+      "name": "Jeremias",
+      "testament": "AT",
+      "track": 2,
+      "order": 24,
+      "chapters": 52
+    },
+    {
+      "id": "lamentacoes",
+      "name": "Lamentações",
+      "testament": "AT",
+      "track": 2,
+      "order": 25,
+      "chapters": 5
+    },
+    {
+      "id": "ezequiel",
+      "name": "Ezequiel",
+      "testament": "AT",
+      "track": 2,
+      "order": 26,
+      "chapters": 48
+    },
+    {
+      "id": "daniel",
+      "name": "Daniel",
+      "testament": "AT",
+      "track": 3,
+      "order": 27,
+      "chapters": 12
+    },
+    {
+      "id": "oseias",
+      "name": "Oséias",
+      "testament": "AT",
+      "track": 3,
+      "order": 28,
+      "chapters": 14
+    },
+    {
+      "id": "joel",
+      "name": "Joel",
+      "testament": "AT",
+      "track": 3,
+      "order": 29,
+      "chapters": 3
+    },
+    {
+      "id": "amos",
+      "name": "Amós",
+      "testament": "AT",
+      "track": 3,
+      "order": 30,
+      "chapters": 9
+    },
+    {
+      "id": "obadias",
+      "name": "Obadias",
+      "testament": "AT",
+      "track": 3,
+      "order": 31,
+      "chapters": 1
+    },
+    {
+      "id": "jonas",
+      "name": "Jonas",
+      "testament": "AT",
+      "track": 3,
+      "order": 32,
+      "chapters": 4
+    },
+    {
+      "id": "miqueias",
+      "name": "Miquéias",
+      "testament": "AT",
+      "track": 3,
+      "order": 33,
+      "chapters": 7
+    },
+    {
+      "id": "naum",
+      "name": "Naum",
+      "testament": "AT",
+      "track": 3,
+      "order": 34,
+      "chapters": 3
+    },
+    {
+      "id": "habacuque",
+      "name": "Habacuque",
+      "testament": "AT",
+      "track": 3,
+      "order": 35,
+      "chapters": 3
+    },
+    {
+      "id": "sofonias",
+      "name": "Sofonias",
+      "testament": "AT",
+      "track": 3,
+      "order": 36,
+      "chapters": 3
+    },
+    {
+      "id": "ageu",
+      "name": "Ageu",
+      "testament": "AT",
+      "track": 3,
+      "order": 37,
+      "chapters": 2
+    },
+    {
+      "id": "zacarias",
+      "name": "Zacarias",
+      "testament": "AT",
+      "track": 3,
+      "order": 38,
+      "chapters": 14
+    },
+    {
+      "id": "malaquias",
+      "name": "Malaquias",
+      "testament": "AT",
+      "track": 3,
+      "order": 39,
+      "chapters": 4
+    },
+    {
+      "id": "mateus",
+      "name": "Mateus",
+      "testament": "NT",
+      "track": 1,
+      "order": 40,
+      "chapters": 28
+    },
+    {
+      "id": "marcos",
+      "name": "Marcos",
+      "testament": "NT",
+      "track": 1,
+      "order": 41,
+      "chapters": 16
+    },
+    {
+      "id": "lucas",
+      "name": "Lucas",
+      "testament": "NT",
+      "track": 1,
+      "order": 42,
+      "chapters": 24
+    },
+    {
+      "id": "joao",
+      "name": "João",
+      "testament": "NT",
+      "track": 1,
+      "order": 43,
+      "chapters": 21
+    },
+    {
+      "id": "atos",
+      "name": "Atos",
+      "testament": "NT",
+      "track": 1,
+      "order": 44,
+      "chapters": 28
+    },
+    {
+      "id": "romanos",
+      "name": "Romanos",
+      "testament": "NT",
+      "track": 1,
+      "order": 45,
+      "chapters": 16
+    },
+    {
+      "id": "1corintios",
+      "name": "I Coríntios",
+      "testament": "NT",
+      "track": 1,
+      "order": 46,
+      "chapters": 16
+    },
+    {
+      "id": "2corintios",
+      "name": "II Coríntios",
+      "testament": "NT",
+      "track": 1,
+      "order": 47,
+      "chapters": 13
+    },
+    {
+      "id": "galatas",
+      "name": "Gálatas",
+      "testament": "NT",
+      "track": 1,
+      "order": 48,
+      "chapters": 6
+    },
+    {
+      "id": "efesios",
+      "name": "Efésios",
+      "testament": "NT",
+      "track": 1,
+      "order": 49,
+      "chapters": 6
+    },
+    {
+      "id": "filipenses",
+      "name": "Filipenses",
+      "testament": "NT",
+      "track": 1,
+      "order": 50,
+      "chapters": 4
+    },
+    {
+      "id": "colossenses",
+      "name": "Colossenses",
+      "testament": "NT",
+      "track": 1,
+      "order": 51,
+      "chapters": 4
+    },
+    {
+      "id": "1tessalonicenses",
+      "name": "I Tessalonicenses",
+      "testament": "NT",
+      "track": 1,
+      "order": 52,
+      "chapters": 5
+    },
+    {
+      "id": "2tessalonicenses",
+      "name": "II Tessalonicenses",
+      "testament": "NT",
+      "track": 1,
+      "order": 53,
+      "chapters": 3
+    },
+    {
+      "id": "1timoteo",
+      "name": "I Timóteo",
+      "testament": "NT",
+      "track": 1,
+      "order": 54,
+      "chapters": 6
+    },
+    {
+      "id": "2timoteo",
+      "name": "II Timóteo",
+      "testament": "NT",
+      "track": 1,
+      "order": 55,
+      "chapters": 4
+    },
+    {
+      "id": "tito",
+      "name": "Tito",
+      "testament": "NT",
+      "track": 1,
+      "order": 56,
+      "chapters": 3
+    },
+    {
+      "id": "filemom",
+      "name": "Filemom",
+      "testament": "NT",
+      "track": 1,
+      "order": 57,
+      "chapters": 1
+    },
+    {
+      "id": "hebreus",
+      "name": "Hebreus",
+      "testament": "NT",
+      "track": 1,
+      "order": 58,
+      "chapters": 13
+    },
+    {
+      "id": "tiago",
+      "name": "Tiago",
+      "testament": "NT",
+      "track": 1,
+      "order": 59,
+      "chapters": 5
+    },
+    {
+      "id": "1pedro",
+      "name": "I Pedro",
+      "testament": "NT",
+      "track": 1,
+      "order": 60,
+      "chapters": 5
+    },
+    {
+      "id": "2pedro",
+      "name": "II Pedro",
+      "testament": "NT",
+      "track": 1,
+      "order": 61,
+      "chapters": 3
+    },
+    {
+      "id": "1joao",
+      "name": "I João",
+      "testament": "NT",
+      "track": 1,
+      "order": 62,
+      "chapters": 5
+    },
+    {
+      "id": "2joao",
+      "name": "II João",
+      "testament": "NT",
+      "track": 1,
+      "order": 63,
+      "chapters": 1
+    },
+    {
+      "id": "3joao",
+      "name": "III João",
+      "testament": "NT",
+      "track": 1,
+      "order": 64,
+      "chapters": 1
+    },
+    {
+      "id": "judas",
+      "name": "Judas",
+      "testament": "NT",
+      "track": 1,
+      "order": 65,
+      "chapters": 1
+    },
+    {
+      "id": "apocalipse",
+      "name": "Apocalipse",
+      "testament": "NT",
+      "track": 1,
+      "order": 66,
+      "chapters": 22
+    }
+  ],
+  "plan": [
+    {
+      "day": 1,
+      "chapters": [
+        "lucas-5",
+        "genesis-1",
+        "genesis-2",
+        "salmos-1"
+      ]
+    },
+    {
+      "day": 2,
+      "chapters": [
+        "lucas-6",
+        "genesis-3",
+        "genesis-4",
+        "genesis-5",
+        "salmos-2"
+      ]
+    },
+    {
+      "day": 3,
+      "chapters": [
+        "genesis-6",
+        "genesis-7",
+        "salmos-3"
+      ]
+    },
+    {
+      "day": 4,
+      "chapters": [
+        "lucas-7",
+        "genesis-8",
+        "genesis-9",
+        "genesis-10",
+        "salmos-4"
+      ]
+    },
+    {
+      "day": 5,
+      "chapters": [
+        "genesis-11",
+        "salmos-5"
+      ]
+    },
+    {
+      "day": 6,
+      "chapters": [
+        "lucas-8",
+        "genesis-12",
+        "salmos-6"
+      ]
+    },
+    {
+      "day": 7,
+      "chapters": [
+        "genesis-13",
+        "genesis-14",
+        "salmos-7"
+      ]
+    },
+    {
+      "day": 8,
+      "chapters": [
+        "lucas-9",
+        "genesis-15",
+        "salmos-8"
+      ]
+    },
+    {
+      "day": 9,
+      "chapters": [
+        "genesis-16",
+        "salmos-9"
+      ]
+    },
+    {
+      "day": 10,
+      "chapters": [
+        "lucas-10",
+        "genesis-17",
+        "salmos-10"
+      ]
+    },
+    {
+      "day": 11,
+      "chapters": [
+        "genesis-18",
+        "salmos-11"
+      ]
+    },
+    {
+      "day": 12,
+      "chapters": [
+        "lucas-11",
+        "genesis-19",
+        "salmos-12"
+      ]
+    },
+    {
+      "day": 13,
+      "chapters": [
+        "genesis-20",
+        "salmos-13"
+      ]
+    },
+    {
+      "day": 14,
+      "chapters": [
+        "lucas-12",
+        "genesis-21",
+        "salmos-14"
+      ]
+    },
+    {
+      "day": 15,
+      "chapters": [
+        "genesis-22",
+        "salmos-15"
+      ]
+    },
+    {
+      "day": 16,
+      "chapters": [
+        "lucas-13",
+        "genesis-23",
+        "salmos-16"
+      ]
+    },
+    {
+      "day": 17,
+      "chapters": [
+        "genesis-24",
+        "salmos-17"
+      ]
+    },
+    {
+      "day": 18,
+      "chapters": [
+        "lucas-14",
+        "genesis-25",
+        "salmos-18"
+      ]
+    },
+    {
+      "day": 19,
+      "chapters": [
+        "genesis-26",
+        "salmos-19"
+      ]
+    },
+    {
+      "day": 20,
+      "chapters": [
+        "lucas-15",
+        "genesis-27",
+        "salmos-20"
+      ]
+    },
+    {
+      "day": 21,
+      "chapters": [
+        "lucas-16",
+        "genesis-28",
+        "salmos-21"
+      ]
+    },
+    {
+      "day": 22,
+      "chapters": [
+        "lucas-17",
+        "genesis-29",
+        "salmos-22"
+      ]
+    },
+    {
+      "day": 23,
+      "chapters": [
+        "lucas-18",
+        "genesis-30",
+        "salmos-23"
+      ]
+    },
+    {
+      "day": 24,
+      "chapters": [
+        "genesis-31",
+        "salmos-24"
+      ]
+    },
+    {
+      "day": 25,
+      "chapters": [
+        "lucas-19",
+        "genesis-32",
+        "genesis-33",
+        "salmos-25"
+      ]
+    },
+    {
+      "day": 26,
+      "chapters": [
+        "genesis-34",
+        "salmos-26"
+      ]
+    },
+    {
+      "day": 27,
+      "chapters": [
+        "lucas-20",
+        "genesis-35",
+        "genesis-36",
+        "salmos-27"
+      ]
+    },
+    {
+      "day": 28,
+      "chapters": [
+        "genesis-37",
+        "salmos-28"
+      ]
+    },
+    {
+      "day": 29,
+      "chapters": [
+        "lucas-21",
+        "genesis-38",
+        "salmos-29"
+      ]
+    },
+    {
+      "day": 30,
+      "chapters": [
+        "lucas-22",
+        "genesis-39",
+        "salmos-30"
+      ]
+    },
+    {
+      "day": 31,
+      "chapters": [
+        "genesis-40",
+        "salmos-31"
+      ]
+    },
+    {
+      "day": 32,
+      "chapters": [
+        "lucas-23",
+        "genesis-41",
+        "salmos-32"
+      ]
+    },
+    {
+      "day": 33,
+      "chapters": [
+        "genesis-42",
+        "salmos-33"
+      ]
+    },
+    {
+      "day": 34,
+      "chapters": [
+        "lucas-24",
+        "genesis-43",
+        "salmos-34"
+      ]
+    },
+    {
+      "day": 35,
+      "chapters": [
+        "genesis-44",
+        "salmos-35"
+      ]
+    },
+    {
+      "day": 36,
+      "chapters": [
+        "hebreus-1",
+        "genesis-45",
+        "genesis-46",
+        "salmos-36"
+      ]
+    },
+    {
+      "day": 37,
+      "chapters": [
+        "hebreus-2",
+        "genesis-47",
+        "salmos-37"
+      ]
+    },
+    {
+      "day": 38,
+      "chapters": [
+        "hebreus-3",
+        "hebreus-4",
+        "genesis-48",
+        "salmos-38"
+      ]
+    },
+    {
+      "day": 39,
+      "chapters": [
+        "hebreus-5",
+        "hebreus-6",
+        "genesis-49",
+        "genesis-50",
+        "salmos-39"
+      ]
+    },
+    {
+      "day": 40,
+      "chapters": [
+        "exodo-1",
+        "exodo-2",
+        "salmos-40"
+      ]
+    },
+    {
+      "day": 41,
+      "chapters": [
+        "hebreus-7",
+        "exodo-3",
+        "exodo-4",
+        "salmos-41"
+      ]
+    },
+    {
+      "day": 42,
+      "chapters": [
+        "hebreus-8",
+        "exodo-5",
+        "exodo-6",
+        "proverbios-1"
+      ]
+    },
+    {
+      "day": 43,
+      "chapters": [
+        "hebreus-9",
+        "exodo-7",
+        "exodo-8",
+        "proverbios-2"
+      ]
+    },
+    {
+      "day": 44,
+      "chapters": [
+        "hebreus-10",
+        "exodo-9",
+        "exodo-10",
+        "proverbios-3"
+      ]
+    },
+    {
+      "day": 45,
+      "chapters": [
+        "exodo-11",
+        "exodo-12",
+        "proverbios-4"
+      ]
+    },
+    {
+      "day": 46,
+      "chapters": [
+        "hebreus-11",
+        "exodo-13",
+        "exodo-14",
+        "proverbios-5"
+      ]
+    },
+    {
+      "day": 47,
+      "chapters": [
+        "exodo-15",
+        "proverbios-6",
+        "proverbios-7"
+      ]
+    },
+    {
+      "day": 48,
+      "chapters": [
+        "hebreus-12",
+        "exodo-16",
+        "exodo-17"
+      ]
+    },
+    {
+      "day": 49,
+      "chapters": [
+        "hebreus-13",
+        "exodo-18",
+        "exodo-19",
+        "proverbios-8"
+      ]
+    },
+    {
+      "day": 50,
+      "chapters": [
+        "mateus-1",
+        "exodo-20",
+        "exodo-21",
+        "proverbios-9"
+      ]
+    },
+    {
+      "day": 51,
+      "chapters": [
+        "mateus-2",
+        "exodo-22",
+        "exodo-23",
+        "proverbios-10"
+      ]
+    },
+    {
+      "day": 52,
+      "chapters": [
+        "mateus-3",
+        "exodo-24",
+        "proverbios-11"
+      ]
+    },
+    {
+      "day": 53,
+      "chapters": [
+        "mateus-4",
+        "exodo-25",
+        "exodo-26",
+        "exodo-27",
+        "proverbios-12"
+      ]
+    },
+    {
+      "day": 54,
+      "chapters": [
+        "mateus-5",
+        "exodo-28",
+        "exodo-29",
+        "proverbios-13"
+      ]
+    },
+    {
+      "day": 55,
+      "chapters": [
+        "exodo-30",
+        "exodo-31",
+        "exodo-32",
+        "proverbios-14"
+      ]
+    },
+    {
+      "day": 56,
+      "chapters": [
+        "mateus-6",
+        "exodo-33",
+        "exodo-34",
+        "proverbios-15"
+      ]
+    },
+    {
+      "day": 57,
+      "chapters": [
+        "exodo-35",
+        "exodo-36",
+        "proverbios-16"
+      ]
+    },
+    {
+      "day": 58,
+      "chapters": [
+        "mateus-7",
+        "exodo-37",
+        "exodo-38",
+        "proverbios-17"
+      ]
+    },
+    {
+      "day": 59,
+      "chapters": [
+        "mateus-8",
+        "exodo-39",
+        "exodo-40",
+        "proverbios-18"
+      ]
+    },
+    {
+      "day": 60,
+      "chapters": [
+        "levitico-1",
+        "levitico-2",
+        "proverbios-19"
+      ]
+    },
+    {
+      "day": 61,
+      "chapters": [
+        "mateus-9",
+        "levitico-3",
+        "levitico-4",
+        "proverbios-20"
+      ]
+    },
+    {
+      "day": 62,
+      "chapters": [
+        "levitico-5",
+        "levitico-6",
+        "proverbios-21"
+      ]
+    },
+    {
+      "day": 63,
+      "chapters": [
+        "mateus-10",
+        "levitico-7",
+        "levitico-8",
+        "proverbios-22"
+      ]
+    },
+    {
+      "day": 64,
+      "chapters": [
+        "levitico-9",
+        "levitico-10",
+        "proverbios-23"
+      ]
+    },
+    {
+      "day": 65,
+      "chapters": [
+        "mateus-11",
+        "levitico-11",
+        "levitico-12",
+        "proverbios-24"
+      ]
+    },
+    {
+      "day": 66,
+      "chapters": [
+        "levitico-13",
+        "proverbios-25"
+      ]
+    },
+    {
+      "day": 67,
+      "chapters": [
+        "mateus-12",
+        "levitico-14",
+        "proverbios-26"
+      ]
+    },
+    {
+      "day": 68,
+      "chapters": [
+        "levitico-15",
+        "levitico-16",
+        "proverbios-27"
+      ]
+    },
+    {
+      "day": 69,
+      "chapters": [
+        "mateus-13",
+        "levitico-17",
+        "levitico-18",
+        "proverbios-28"
+      ]
+    },
+    {
+      "day": 70,
+      "chapters": [
+        "levitico-19",
+        "proverbios-29"
+      ]
+    },
+    {
+      "day": 71,
+      "chapters": [
+        "mateus-14",
+        "levitico-20",
+        "levitico-21",
+        "proverbios-30"
+      ]
+    },
+    {
+      "day": 72,
+      "chapters": [
+        "levitico-22",
+        "levitico-23",
+        "proverbios-31"
+      ]
+    },
+    {
+      "day": 73,
+      "chapters": [
+        "mateus-15",
+        "levitico-24",
+        "levitico-25",
+        "eclesiastes-1"
+      ]
+    },
+    {
+      "day": 74,
+      "chapters": [
+        "levitico-26",
+        "levitico-27",
+        "eclesiastes-2"
+      ]
+    },
+    {
+      "day": 75,
+      "chapters": [
+        "mateus-16",
+        "numeros-1",
+        "numeros-2",
+        "eclesiastes-3"
+      ]
+    },
+    {
+      "day": 76,
+      "chapters": [
+        "mateus-17",
+        "numeros-3",
+        "numeros-4",
+        "eclesiastes-4"
+      ]
+    },
+    {
+      "day": 77,
+      "chapters": [
+        "mateus-18",
+        "numeros-5",
+        "numeros-6",
+        "eclesiastes-5"
+      ]
+    },
+    {
+      "day": 78,
+      "chapters": [
+        "numeros-7",
+        "numeros-8",
+        "eclesiastes-6"
+      ]
+    },
+    {
+      "day": 79,
+      "chapters": [
+        "mateus-19",
+        "numeros-9",
+        "numeros-10",
+        "eclesiastes-7"
+      ]
+    },
+    {
+      "day": 80,
+      "chapters": [
+        "numeros-11",
+        "numeros-12",
+        "eclesiastes-8"
+      ]
+    },
+    {
+      "day": 81,
+      "chapters": [
+        "mateus-20",
+        "numeros-13",
+        "numeros-14",
+        "eclesiastes-9"
+      ]
+    },
+    {
+      "day": 82,
+      "chapters": [
+        "numeros-15",
+        "numeros-16",
+        "eclesiastes-10"
+      ]
+    },
+    {
+      "day": 83,
+      "chapters": [
+        "mateus-21",
+        "numeros-17",
+        "numeros-18",
+        "eclesiastes-11"
+      ]
+    },
+    {
+      "day": 84,
+      "chapters": [
+        "numeros-19",
+        "numeros-20",
+        "eclesiastes-12"
+      ]
+    },
+    {
+      "day": 85,
+      "chapters": [
+        "mateus-22",
+        "numeros-21",
+        "cantares-1",
+        "cantares-2"
+      ]
+    },
+    {
+      "day": 86,
+      "chapters": [
+        "numeros-22",
+        "cantares-3"
+      ]
+    },
+    {
+      "day": 87,
+      "chapters": [
+        "mateus-23",
+        "numeros-23",
+        "cantares-4",
+        "cantares-5"
+      ]
+    },
+    {
+      "day": 88,
+      "chapters": [
+        "numeros-24",
+        "cantares-6"
+      ]
+    },
+    {
+      "day": 89,
+      "chapters": [
+        "mateus-24",
+        "numeros-25",
+        "numeros-26",
+        "numeros-27",
+        "cantares-7",
+        "cantares-8"
+      ]
+    },
+    {
+      "day": 90,
+      "chapters": [
+        "numeros-28",
+        "numeros-29"
+      ]
+    },
+    {
+      "day": 91,
+      "chapters": [
+        "mateus-25",
+        "numeros-30",
+        "numeros-31",
+        "jo-1"
+      ]
+    },
+    {
+      "day": 92,
+      "chapters": [
+        "numeros-32",
+        "numeros-33",
+        "numeros-34",
+        "jo-2"
+      ]
+    },
+    {
+      "day": 93,
+      "chapters": [
+        "mateus-26",
+        "numeros-35",
+        "numeros-36",
+        "jo-3"
+      ]
+    },
+    {
+      "day": 94,
+      "chapters": [
+        "deuteronomio-1",
+        "deuteronomio-2",
+        "jo-4"
+      ]
+    },
+    {
+      "day": 95,
+      "chapters": [
+        "deuteronomio-3",
+        "deuteronomio-4",
+        "jo-5"
+      ]
+    },
+    {
+      "day": 96,
+      "chapters": [
+        "mateus-27",
+        "deuteronomio-5",
+        "deuteronomio-6",
+        "jo-6"
+      ]
+    },
+    {
+      "day": 97,
+      "chapters": [
+        "deuteronomio-7",
+        "deuteronomio-8",
+        "jo-7"
+      ]
+    },
+    {
+      "day": 98,
+      "chapters": [
+        "mateus-28",
+        "deuteronomio-9",
+        "deuteronomio-10",
+        "jo-8"
+      ]
+    },
+    {
+      "day": 99,
+      "chapters": [
+        "atos-1",
+        "deuteronomio-11",
+        "deuteronomio-12",
+        "jo-9"
+      ]
+    },
+    {
+      "day": 100,
+      "chapters": [
+        "atos-2",
+        "deuteronomio-13",
+        "deuteronomio-14",
+        "jo-10"
+      ]
+    },
+    {
+      "day": 101,
+      "chapters": [
+        "deuteronomio-15",
+        "deuteronomio-16",
+        "jo-11"
+      ]
+    },
+    {
+      "day": 102,
+      "chapters": [
+        "atos-3",
+        "deuteronomio-17",
+        "deuteronomio-18",
+        "jo-12"
+      ]
+    },
+    {
+      "day": 103,
+      "chapters": [
+        "atos-4",
+        "deuteronomio-19",
+        "deuteronomio-20",
+        "jo-13"
+      ]
+    },
+    {
+      "day": 104,
+      "chapters": [
+        "deuteronomio-21",
+        "deuteronomio-22",
+        "jo-14"
+      ]
+    },
+    {
+      "day": 105,
+      "chapters": [
+        "atos-5",
+        "deuteronomio-23",
+        "deuteronomio-24",
+        "jo-15"
+      ]
+    },
+    {
+      "day": 106,
+      "chapters": [
+        "deuteronomio-25",
+        "deuteronomio-26",
+        "deuteronomio-27",
+        "jo-16"
+      ]
+    },
+    {
+      "day": 107,
+      "chapters": [
+        "atos-6",
+        "deuteronomio-28",
+        "jo-17"
+      ]
+    },
+    {
+      "day": 108,
+      "chapters": [
+        "atos-7",
+        "deuteronomio-29",
+        "deuteronomio-30",
+        "jo-18"
+      ]
+    },
+    {
+      "day": 109,
+      "chapters": [
+        "atos-8",
+        "deuteronomio-31",
+        "deuteronomio-32",
+        "jo-19"
+      ]
+    },
+    {
+      "day": 110,
+      "chapters": [
+        "deuteronomio-33",
+        "deuteronomio-34",
+        "jo-20"
+      ]
+    },
+    {
+      "day": 111,
+      "chapters": [
+        "josue-1",
+        "josue-2",
+        "jo-21"
+      ]
+    },
+    {
+      "day": 112,
+      "chapters": [
+        "atos-9",
+        "josue-3",
+        "josue-4",
+        "josue-5",
+        "jo-22"
+      ]
+    },
+    {
+      "day": 113,
+      "chapters": [
+        "josue-6",
+        "jo-23"
+      ]
+    },
+    {
+      "day": 114,
+      "chapters": [
+        "atos-10",
+        "josue-7",
+        "josue-8",
+        "jo-24"
+      ]
+    },
+    {
+      "day": 115,
+      "chapters": [
+        "josue-9",
+        "josue-10",
+        "jo-25"
+      ]
+    },
+    {
+      "day": 116,
+      "chapters": [
+        "atos-11",
+        "josue-11",
+        "josue-12",
+        "jo-26"
+      ]
+    },
+    {
+      "day": 117,
+      "chapters": [
+        "josue-13",
+        "josue-14",
+        "jo-27"
+      ]
+    },
+    {
+      "day": 118,
+      "chapters": [
+        "atos-12",
+        "josue-15",
+        "josue-16",
+        "josue-17",
+        "jo-28"
+      ]
+    },
+    {
+      "day": 119,
+      "chapters": [
+        "atos-13",
+        "josue-18",
+        "josue-19",
+        "jo-29"
+      ]
+    },
+    {
+      "day": 120,
+      "chapters": [
+        "josue-20",
+        "josue-21",
+        "jo-30"
+      ]
+    },
+    {
+      "day": 121,
+      "chapters": [
+        "atos-14",
+        "josue-22",
+        "jo-31"
+      ]
+    },
+    {
+      "day": 122,
+      "chapters": [
+        "atos-15",
+        "josue-23",
+        "josue-24",
+        "jo-32"
+      ]
+    },
+    {
+      "day": 123,
+      "chapters": [
+        "juizes-1",
+        "jo-33"
+      ]
+    },
+    {
+      "day": 124,
+      "chapters": [
+        "atos-16",
+        "juizes-2",
+        "juizes-3",
+        "jo-34"
+      ]
+    },
+    {
+      "day": 125,
+      "chapters": [
+        "juizes-4",
+        "juizes-5",
+        "jo-35"
+      ]
+    },
+    {
+      "day": 126,
+      "chapters": [
+        "atos-17",
+        "juizes-6",
+        "jo-36"
+      ]
+    },
+    {
+      "day": 127,
+      "chapters": [
+        "juizes-7",
+        "juizes-8",
+        "jo-37"
+      ]
+    },
+    {
+      "day": 128,
+      "chapters": [
+        "atos-18",
+        "juizes-9",
+        "jo-38"
+      ]
+    },
+    {
+      "day": 129,
+      "chapters": [
+        "atos-19",
+        "juizes-10",
+        "juizes-11",
+        "jo-39"
+      ]
+    },
+    {
+      "day": 130,
+      "chapters": [
+        "juizes-12",
+        "jo-40"
+      ]
+    },
+    {
+      "day": 131,
+      "chapters": [
+        "atos-20",
+        "juizes-13",
+        "jo-41"
+      ]
+    },
+    {
+      "day": 132,
+      "chapters": [
+        "juizes-14",
+        "juizes-15",
+        "jo-42"
+      ]
+    },
+    {
+      "day": 133,
+      "chapters": [
+        "atos-21",
+        "juizes-16",
+        "salmos-42"
+      ]
+    },
+    {
+      "day": 134,
+      "chapters": [
+        "atos-22",
+        "juizes-17",
+        "juizes-18",
+        "salmos-43"
+      ]
+    },
+    {
+      "day": 135,
+      "chapters": [
+        "atos-23",
+        "juizes-19",
+        "salmos-44"
+      ]
+    },
+    {
+      "day": 136,
+      "chapters": [
+        "atos-24",
+        "juizes-20",
+        "salmos-45"
+      ]
+    },
+    {
+      "day": 137,
+      "chapters": [
+        "juizes-21",
+        "salmos-46"
+      ]
+    },
+    {
+      "day": 138,
+      "chapters": [
+        "atos-25",
+        "rute-1",
+        "rute-2",
+        "salmos-47"
+      ]
+    },
+    {
+      "day": 139,
+      "chapters": [
+        "atos-26",
+        "rute-3",
+        "rute-4",
+        "salmos-48"
+      ]
+    },
+    {
+      "day": 140,
+      "chapters": [
+        "1samuel-1",
+        "1samuel-2",
+        "salmos-49"
+      ]
+    },
+    {
+      "day": 141,
+      "chapters": [
+        "atos-27",
+        "salmos-50"
+      ]
+    },
+    {
+      "day": 142,
+      "chapters": [
+        "1samuel-3",
+        "salmos-51"
+      ]
+    },
+    {
+      "day": 143,
+      "chapters": [
+        "atos-28",
+        "1samuel-4",
+        "1samuel-5",
+        "salmos-52"
+      ]
+    },
+    {
+      "day": 144,
+      "chapters": [
+        "1samuel-6",
+        "1samuel-7",
+        "salmos-53"
+      ]
+    },
+    {
+      "day": 145,
+      "chapters": [
+        "romanos-1",
+        "1samuel-8",
+        "salmos-54"
+      ]
+    },
+    {
+      "day": 146,
+      "chapters": [
+        "1samuel-9",
+        "1samuel-10",
+        "salmos-55"
+      ]
+    },
+    {
+      "day": 147,
+      "chapters": [
+        "romanos-2",
+        "romanos-3",
+        "1samuel-11",
+        "salmos-56"
+      ]
+    },
+    {
+      "day": 148,
+      "chapters": [
+        "1samuel-12",
+        "salmos-57"
+      ]
+    },
+    {
+      "day": 149,
+      "chapters": [
+        "romanos-4",
+        "1samuel-13",
+        "salmos-58"
+      ]
+    },
+    {
+      "day": 150,
+      "chapters": [
+        "romanos-5",
+        "1samuel-14",
+        "salmos-59"
+      ]
+    },
+    {
+      "day": 151,
+      "chapters": [
+        "romanos-6",
+        "1samuel-15",
+        "salmos-60"
+      ]
+    },
+    {
+      "day": 152,
+      "chapters": [
+        "romanos-7",
+        "1samuel-16",
+        "salmos-61"
+      ]
+    },
+    {
+      "day": 153,
+      "chapters": [
+        "romanos-8",
+        "1samuel-17",
+        "salmos-62"
+      ]
+    },
+    {
+      "day": 154,
+      "chapters": [
+        "romanos-9",
+        "1samuel-18",
+        "salmos-63"
+      ]
+    },
+    {
+      "day": 155,
+      "chapters": [
+        "romanos-10",
+        "1samuel-19",
+        "salmos-64"
+      ]
+    },
+    {
+      "day": 156,
+      "chapters": [
+        "romanos-11",
+        "1samuel-20",
+        "salmos-65"
+      ]
+    },
+    {
+      "day": 157,
+      "chapters": [
+        "1samuel-21",
+        "1samuel-22",
+        "salmos-66"
+      ]
+    },
+    {
+      "day": 158,
+      "chapters": [
+        "romanos-12",
+        "1samuel-23",
+        "1samuel-24",
+        "salmos-67"
+      ]
+    },
+    {
+      "day": 159,
+      "chapters": [
+        "romanos-13",
+        "1samuel-25",
+        "salmos-68"
+      ]
+    },
+    {
+      "day": 160,
+      "chapters": [
+        "romanos-14",
+        "1samuel-26",
+        "salmos-69"
+      ]
+    },
+    {
+      "day": 161,
+      "chapters": [
+        "romanos-15",
+        "1samuel-27",
+        "1samuel-28",
+        "salmos-70"
+      ]
+    },
+    {
+      "day": 162,
+      "chapters": [
+        "1samuel-29",
+        "1samuel-30",
+        "1samuel-31",
+        "salmos-71"
+      ]
+    },
+    {
+      "day": 163,
+      "chapters": [
+        "romanos-16",
+        "2samuel-1",
+        "salmos-72"
+      ]
+    },
+    {
+      "day": 164,
+      "chapters": [
+        "marcos-1",
+        "2samuel-2",
+        "2samuel-3",
+        "daniel-1"
+      ]
+    },
+    {
+      "day": 165,
+      "chapters": [
+        "daniel-2"
+      ]
+    },
+    {
+      "day": 166,
+      "chapters": [
+        "marcos-2",
+        "2samuel-4",
+        "2samuel-5"
+      ]
+    },
+    {
+      "day": 167,
+      "chapters": [
+        "marcos-3",
+        "2samuel-6",
+        "daniel-3"
+      ]
+    },
+    {
+      "day": 168,
+      "chapters": [
+        "2samuel-7",
+        "2samuel-8",
+        "daniel-4"
+      ]
+    },
+    {
+      "day": 169,
+      "chapters": [
+        "marcos-4",
+        "2samuel-9",
+        "2samuel-10",
+        "daniel-5"
+      ]
+    },
+    {
+      "day": 170,
+      "chapters": [
+        "2samuel-11",
+        "2samuel-12",
+        "daniel-6"
+      ]
+    },
+    {
+      "day": 171,
+      "chapters": [
+        "marcos-5",
+        "2samuel-13",
+        "daniel-7"
+      ]
+    },
+    {
+      "day": 172,
+      "chapters": [
+        "2samuel-14",
+        "daniel-8"
+      ]
+    },
+    {
+      "day": 173,
+      "chapters": [
+        "marcos-6",
+        "2samuel-15",
+        "daniel-9"
+      ]
+    },
+    {
+      "day": 174,
+      "chapters": [
+        "2samuel-16",
+        "daniel-10",
+        "daniel-11"
+      ]
+    },
+    {
+      "day": 175,
+      "chapters": [
+        "marcos-7",
+        "2samuel-17"
+      ]
+    },
+    {
+      "day": 176,
+      "chapters": [
+        "2samuel-18"
+      ]
+    },
+    {
+      "day": 177,
+      "chapters": [
+        "marcos-8",
+        "2samuel-19",
+        "daniel-12"
+      ]
+    },
+    {
+      "day": 178,
+      "chapters": [
+        "marcos-9",
+        "2samuel-20",
+        "2samuel-21",
+        "oseias-1",
+        "oseias-2"
+      ]
+    },
+    {
+      "day": 179,
+      "chapters": [
+        "2samuel-22"
+      ]
+    },
+    {
+      "day": 180,
+      "chapters": [
+        "marcos-10",
+        "2samuel-23",
+        "oseias-3"
+      ]
+    },
+    {
+      "day": 181,
+      "chapters": [
+        "2samuel-24",
+        "oseias-4"
+      ]
+    },
+    {
+      "day": 182,
+      "chapters": [
+        "marcos-11",
+        "1reis-1",
+        "oseias-5"
+      ]
+    },
+    {
+      "day": 183,
+      "chapters": [
+        "1reis-2"
+      ]
+    },
+    {
+      "day": 184,
+      "chapters": [
+        "marcos-12",
+        "1reis-3",
+        "oseias-6",
+        "oseias-7"
+      ]
+    },
+    {
+      "day": 185,
+      "chapters": [
+        "1reis-4",
+        "1reis-5"
+      ]
+    },
+    {
+      "day": 186,
+      "chapters": [
+        "marcos-13",
+        "1reis-6",
+        "oseias-8"
+      ]
+    },
+    {
+      "day": 187,
+      "chapters": [
+        "1reis-7",
+        "oseias-9"
+      ]
+    },
+    {
+      "day": 188,
+      "chapters": [
+        "marcos-14",
+        "1reis-8",
+        "oseias-10"
+      ]
+    },
+    {
+      "day": 189,
+      "chapters": [
+        "1reis-9",
+        "oseias-11"
+      ]
+    },
+    {
+      "day": 190,
+      "chapters": [
+        "marcos-15",
+        "1reis-10",
+        "oseias-12"
+      ]
+    },
+    {
+      "day": 191,
+      "chapters": [
+        "1reis-11",
+        "oseias-13"
+      ]
+    },
+    {
+      "day": 192,
+      "chapters": [
+        "marcos-16",
+        "1reis-12",
+        "oseias-14"
+      ]
+    },
+    {
+      "day": 193,
+      "chapters": [
+        "1corintios-1",
+        "1reis-13",
+        "joel-1"
+      ]
+    },
+    {
+      "day": 194,
+      "chapters": [
+        "1reis-14",
+        "joel-2"
+      ]
+    },
+    {
+      "day": 195,
+      "chapters": [
+        "1corintios-2",
+        "1reis-15"
+      ]
+    },
+    {
+      "day": 196,
+      "chapters": [
+        "1corintios-3",
+        "1reis-16",
+        "joel-3"
+      ]
+    },
+    {
+      "day": 197,
+      "chapters": [
+        "1corintios-4",
+        "1reis-17",
+        "amos-1"
+      ]
+    },
+    {
+      "day": 198,
+      "chapters": [
+        "1corintios-5",
+        "1reis-18",
+        "amos-2",
+        "amos-3"
+      ]
+    },
+    {
+      "day": 199,
+      "chapters": [
+        "1corintios-6",
+        "1reis-19",
+        "amos-4"
+      ]
+    },
+    {
+      "day": 200,
+      "chapters": [
+        "1corintios-7",
+        "1reis-20"
+      ]
+    },
+    {
+      "day": 201,
+      "chapters": [
+        "1reis-21",
+        "amos-5"
+      ]
+    },
+    {
+      "day": 202,
+      "chapters": [
+        "1corintios-8",
+        "1reis-22",
+        "amos-6"
+      ]
+    },
+    {
+      "day": 203,
+      "chapters": [
+        "1corintios-9",
+        "2reis-1",
+        "2reis-2",
+        "amos-7"
+      ]
+    },
+    {
+      "day": 204,
+      "chapters": [
+        "1corintios-10",
+        "2reis-3",
+        "amos-8"
+      ]
+    },
+    {
+      "day": 205,
+      "chapters": [
+        "1corintios-11",
+        "2reis-4",
+        "amos-9"
+      ]
+    },
+    {
+      "day": 206,
+      "chapters": [
+        "2reis-5",
+        "obadias-1"
+      ]
+    },
+    {
+      "day": 207,
+      "chapters": [
+        "1corintios-12",
+        "2reis-6",
+        "2reis-7",
+        "jonas-1"
+      ]
+    },
+    {
+      "day": 208,
+      "chapters": [
+        "1corintios-13",
+        "jonas-2"
+      ]
+    },
+    {
+      "day": 209,
+      "chapters": [
+        "1corintios-14",
+        "2reis-8",
+        "jonas-3"
+      ]
+    },
+    {
+      "day": 210,
+      "chapters": [
+        "2reis-9",
+        "jonas-4"
+      ]
+    },
+    {
+      "day": 211,
+      "chapters": [
+        "1corintios-15",
+        "2reis-10",
+        "miqueias-1"
+      ]
+    },
+    {
+      "day": 212,
+      "chapters": [
+        "2reis-11",
+        "miqueias-2"
+      ]
+    },
+    {
+      "day": 213,
+      "chapters": [
+        "1corintios-16",
+        "2reis-12",
+        "2reis-13",
+        "miqueias-3"
+      ]
+    },
+    {
+      "day": 214,
+      "chapters": [
+        "2corintios-1",
+        "2corintios-2",
+        "2reis-14",
+        "miqueias-4",
+        "miqueias-5"
+      ]
+    },
+    {
+      "day": 215,
+      "chapters": [
+        "2corintios-3",
+        "2reis-15",
+        "2reis-16"
+      ]
+    },
+    {
+      "day": 216,
+      "chapters": [
+        "2corintios-4",
+        "2corintios-5",
+        "2reis-17",
+        "miqueias-6"
+      ]
+    },
+    {
+      "day": 217,
+      "chapters": [
+        "2corintios-6",
+        "2reis-18",
+        "miqueias-7"
+      ]
+    },
+    {
+      "day": 218,
+      "chapters": [
+        "2corintios-7",
+        "2reis-19",
+        "naum-1"
+      ]
+    },
+    {
+      "day": 219,
+      "chapters": [
+        "2corintios-8",
+        "2reis-20",
+        "2reis-21",
+        "naum-2"
+      ]
+    },
+    {
+      "day": 220,
+      "chapters": [
+        "2corintios-9",
+        "2reis-22",
+        "2reis-23",
+        "naum-3"
+      ]
+    },
+    {
+      "day": 221,
+      "chapters": [
+        "2corintios-10",
+        "2reis-24",
+        "habacuque-1"
+      ]
+    },
+    {
+      "day": 222,
+      "chapters": [
+        "2corintios-11",
+        "2reis-25",
+        "habacuque-2"
+      ]
+    },
+    {
+      "day": 223,
+      "chapters": [
+        "2corintios-12",
+        "1cronicas-1",
+        "1cronicas-2",
+        "habacuque-3"
+      ]
+    },
+    {
+      "day": 224,
+      "chapters": [
+        "2corintios-13",
+        "1cronicas-3",
+        "1cronicas-4",
+        "sofonias-1"
+      ]
+    },
+    {
+      "day": 225,
+      "chapters": [
+        "joao-1",
+        "1cronicas-5",
+        "1cronicas-6",
+        "sofonias-2"
+      ]
+    },
+    {
+      "day": 226,
+      "chapters": [
+        "1cronicas-7",
+        "1cronicas-8",
+        "sofonias-3"
+      ]
+    },
+    {
+      "day": 227,
+      "chapters": [
+        "1cronicas-9",
+        "ageu-1",
+        "ageu-2"
+      ]
+    },
+    {
+      "day": 228,
+      "chapters": [
+        "joao-2",
+        "1cronicas-10",
+        "1cronicas-11",
+        "zacarias-1"
+      ]
+    },
+    {
+      "day": 229,
+      "chapters": [
+        "joao-3",
+        "1cronicas-12",
+        "zacarias-2"
+      ]
+    },
+    {
+      "day": 230,
+      "chapters": [
+        "1cronicas-13",
+        "1cronicas-14",
+        "zacarias-3"
+      ]
+    },
+    {
+      "day": 231,
+      "chapters": [
+        "joao-4",
+        "1cronicas-15",
+        "1cronicas-16",
+        "zacarias-4"
+      ]
+    },
+    {
+      "day": 232,
+      "chapters": [
+        "zacarias-5"
+      ]
+    },
+    {
+      "day": 233,
+      "chapters": [
+        "1cronicas-17",
+        "zacarias-6"
+      ]
+    },
+    {
+      "day": 234,
+      "chapters": [
+        "joao-5",
+        "1cronicas-18",
+        "1cronicas-19",
+        "zacarias-7"
+      ]
+    },
+    {
+      "day": 235,
+      "chapters": [
+        "1cronicas-20",
+        "1cronicas-21",
+        "zacarias-8"
+      ]
+    },
+    {
+      "day": 236,
+      "chapters": [
+        "joao-6",
+        "1cronicas-22",
+        "1cronicas-23",
+        "zacarias-9"
+      ]
+    },
+    {
+      "day": 237,
+      "chapters": [
+        "1cronicas-24",
+        "zacarias-10"
+      ]
+    },
+    {
+      "day": 238,
+      "chapters": [
+        "1cronicas-25",
+        "1cronicas-26",
+        "zacarias-11"
+      ]
+    },
+    {
+      "day": 239,
+      "chapters": [
+        "joao-7",
+        "1cronicas-27",
+        "1cronicas-28",
+        "zacarias-12"
+      ]
+    },
+    {
+      "day": 240,
+      "chapters": [
+        "1cronicas-29",
+        "zacarias-13"
+      ]
+    },
+    {
+      "day": 241,
+      "chapters": [
+        "joao-8",
+        "2cronicas-1",
+        "2cronicas-2",
+        "zacarias-14"
+      ]
+    },
+    {
+      "day": 242,
+      "chapters": [
+        "2cronicas-3",
+        "2cronicas-4",
+        "2cronicas-5",
+        "malaquias-1",
+        "malaquias-2"
+      ]
+    },
+    {
+      "day": 243,
+      "chapters": []
+    },
+    {
+      "day": 244,
+      "chapters": [
+        "joao-9",
+        "2cronicas-6",
+        "malaquias-3"
+      ]
+    },
+    {
+      "day": 245,
+      "chapters": [
+        "2cronicas-7",
+        "malaquias-4"
+      ]
+    },
+    {
+      "day": 246,
+      "chapters": [
+        "joao-10",
+        "2cronicas-8",
+        "salmos-73"
+      ]
+    },
+    {
+      "day": 247,
+      "chapters": [
+        "2cronicas-9",
+        "salmos-74"
+      ]
+    },
+    {
+      "day": 248,
+      "chapters": [
+        "joao-11",
+        "2cronicas-10",
+        "2cronicas-11",
+        "salmos-75"
+      ]
+    },
+    {
+      "day": 249,
+      "chapters": [
+        "2cronicas-12",
+        "2cronicas-13",
+        "salmos-76"
+      ]
+    },
+    {
+      "day": 250,
+      "chapters": [
+        "joao-12",
+        "2cronicas-14",
+        "2cronicas-15",
+        "salmos-77"
+      ]
+    },
+    {
+      "day": 251,
+      "chapters": [
+        "2cronicas-16",
+        "2cronicas-17",
+        "salmos-78"
+      ]
+    },
+    {
+      "day": 252,
+      "chapters": [
+        "joao-13",
+        "2cronicas-18"
+      ]
+    },
+    {
+      "day": 253,
+      "chapters": [
+        "2cronicas-19"
+      ]
+    },
+    {
+      "day": 254,
+      "chapters": [
+        "joao-14",
+        "2cronicas-20",
+        "2cronicas-21"
+      ]
+    },
+    {
+      "day": 255,
+      "chapters": [
+        "2cronicas-22",
+        "salmos-79"
+      ]
+    },
+    {
+      "day": 256,
+      "chapters": [
+        "joao-15",
+        "joao-16",
+        "2cronicas-23",
+        "salmos-80"
+      ]
+    },
+    {
+      "day": 257,
+      "chapters": [
+        "2cronicas-24",
+        "salmos-81"
+      ]
+    },
+    {
+      "day": 258,
+      "chapters": [
+        "joao-17",
+        "2cronicas-25",
+        "salmos-82"
+      ]
+    },
+    {
+      "day": 259,
+      "chapters": [
+        "joao-18",
+        "2cronicas-26",
+        "salmos-83"
+      ]
+    },
+    {
+      "day": 260,
+      "chapters": [
+        "2cronicas-27",
+        "2cronicas-28",
+        "salmos-84"
+      ]
+    },
+    {
+      "day": 261,
+      "chapters": [
+        "joao-19",
+        "2cronicas-29",
+        "salmos-85"
+      ]
+    },
+    {
+      "day": 262,
+      "chapters": [
+        "2cronicas-30",
+        "salmos-86"
+      ]
+    },
+    {
+      "day": 263,
+      "chapters": [
+        "joao-20",
+        "2cronicas-31",
+        "salmos-87"
+      ]
+    },
+    {
+      "day": 264,
+      "chapters": [
+        "2cronicas-32",
+        "salmos-88"
+      ]
+    },
+    {
+      "day": 265,
+      "chapters": [
+        "joao-21",
+        "2cronicas-33",
+        "salmos-89"
+      ]
+    },
+    {
+      "day": 266,
+      "chapters": [
+        "1joao-1",
+        "2cronicas-34"
+      ]
+    },
+    {
+      "day": 267,
+      "chapters": [
+        "1joao-2",
+        "2cronicas-35"
+      ]
+    },
+    {
+      "day": 268,
+      "chapters": [
+        "1joao-3",
+        "2cronicas-36",
+        "salmos-90"
+      ]
+    },
+    {
+      "day": 269,
+      "chapters": [
+        "1joao-4",
+        "esdras-1",
+        "esdras-2",
+        "salmos-91"
+      ]
+    },
+    {
+      "day": 270,
+      "chapters": [
+        "1joao-5",
+        "esdras-3",
+        "esdras-4",
+        "salmos-92"
+      ]
+    },
+    {
+      "day": 271,
+      "chapters": [
+        "2joao-1",
+        "esdras-5",
+        "esdras-6",
+        "salmos-93"
+      ]
+    },
+    {
+      "day": 272,
+      "chapters": [
+        "3joao-1",
+        "esdras-7",
+        "esdras-8",
+        "salmos-94"
+      ]
+    },
+    {
+      "day": 273,
+      "chapters": [
+        "judas-1",
+        "esdras-9",
+        "esdras-10",
+        "salmos-95"
+      ]
+    },
+    {
+      "day": 274,
+      "chapters": [
+        "apocalipse-1",
+        "neemias-1",
+        "neemias-2",
+        "salmos-96"
+      ]
+    },
+    {
+      "day": 275,
+      "chapters": [
+        "apocalipse-2",
+        "neemias-3",
+        "salmos-97"
+      ]
+    },
+    {
+      "day": 276,
+      "chapters": [
+        "apocalipse-3",
+        "neemias-4",
+        "salmos-98"
+      ]
+    },
+    {
+      "day": 277,
+      "chapters": [
+        "apocalipse-4",
+        "neemias-5",
+        "neemias-6",
+        "neemias-7",
+        "salmos-99"
+      ]
+    },
+    {
+      "day": 278,
+      "chapters": [
+        "apocalipse-5",
+        "neemias-8",
+        "salmos-100"
+      ]
+    },
+    {
+      "day": 279,
+      "chapters": [
+        "apocalipse-6",
+        "neemias-9",
+        "salmos-101"
+      ]
+    },
+    {
+      "day": 280,
+      "chapters": [
+        "apocalipse-7",
+        "neemias-10",
+        "salmos-102"
+      ]
+    },
+    {
+      "day": 281,
+      "chapters": [
+        "apocalipse-8",
+        "neemias-11",
+        "salmos-103"
+      ]
+    },
+    {
+      "day": 282,
+      "chapters": [
+        "apocalipse-9",
+        "neemias-12",
+        "salmos-104"
+      ]
+    },
+    {
+      "day": 283,
+      "chapters": [
+        "apocalipse-10",
+        "neemias-13"
+      ]
+    },
+    {
+      "day": 284,
+      "chapters": [
+        "apocalipse-11",
+        "ester-1",
+        "salmos-105"
+      ]
+    },
+    {
+      "day": 285,
+      "chapters": [
+        "apocalipse-12",
+        "ester-2"
+      ]
+    },
+    {
+      "day": 286,
+      "chapters": [
+        "apocalipse-13",
+        "ester-3",
+        "ester-4",
+        "salmos-106"
+      ]
+    },
+    {
+      "day": 287,
+      "chapters": [
+        "apocalipse-14",
+        "ester-5",
+        "ester-6"
+      ]
+    },
+    {
+      "day": 288,
+      "chapters": [
+        "apocalipse-15",
+        "ester-7",
+        "ester-8",
+        "salmos-107"
+      ]
+    },
+    {
+      "day": 289,
+      "chapters": [
+        "apocalipse-16",
+        "ester-9",
+        "ester-10"
+      ]
+    },
+    {
+      "day": 290,
+      "chapters": [
+        "apocalipse-17",
+        "isaias-1",
+        "isaias-2",
+        "salmos-108"
+      ]
+    },
+    {
+      "day": 291,
+      "chapters": [
+        "apocalipse-18",
+        "isaias-3",
+        "isaias-4",
+        "salmos-109"
+      ]
+    },
+    {
+      "day": 292,
+      "chapters": [
+        "apocalipse-19",
+        "isaias-5",
+        "isaias-6"
+      ]
+    },
+    {
+      "day": 293,
+      "chapters": [
+        "apocalipse-20",
+        "isaias-7",
+        "isaias-8",
+        "salmos-110"
+      ]
+    },
+    {
+      "day": 294,
+      "chapters": [
+        "apocalipse-21",
+        "apocalipse-22",
+        "isaias-9",
+        "isaias-10",
+        "salmos-111"
+      ]
+    },
+    {
+      "day": 295,
+      "chapters": [
+        "1tessalonicenses-1",
+        "isaias-11",
+        "isaias-12",
+        "isaias-13",
+        "salmos-112"
+      ]
+    },
+    {
+      "day": 296,
+      "chapters": [
+        "1tessalonicenses-2",
+        "isaias-14",
+        "isaias-15",
+        "isaias-16",
+        "salmos-113"
+      ]
+    },
+    {
+      "day": 297,
+      "chapters": [
+        "1tessalonicenses-3",
+        "isaias-17",
+        "isaias-18",
+        "isaias-19",
+        "salmos-114"
+      ]
+    },
+    {
+      "day": 298,
+      "chapters": [
+        "1tessalonicenses-4",
+        "isaias-20",
+        "isaias-21",
+        "isaias-22",
+        "salmos-115"
+      ]
+    },
+    {
+      "day": 299,
+      "chapters": [
+        "1tessalonicenses-5",
+        "isaias-23",
+        "isaias-24",
+        "salmos-116"
+      ]
+    },
+    {
+      "day": 300,
+      "chapters": [
+        "2tessalonicenses-1",
+        "isaias-25",
+        "isaias-26",
+        "salmos-117"
+      ]
+    },
+    {
+      "day": 301,
+      "chapters": [
+        "2tessalonicenses-2",
+        "isaias-27",
+        "isaias-28",
+        "salmos-118"
+      ]
+    },
+    {
+      "day": 302,
+      "chapters": [
+        "2tessalonicenses-3",
+        "isaias-29",
+        "isaias-30",
+        "salmos-119"
+      ]
+    },
+    {
+      "day": 303,
+      "chapters": [
+        "1timoteo-1",
+        "isaias-31",
+        "isaias-32",
+        "isaias-33"
+      ]
+    },
+    {
+      "day": 304,
+      "chapters": [
+        "1timoteo-2",
+        "isaias-34",
+        "isaias-35"
+      ]
+    },
+    {
+      "day": 305,
+      "chapters": [
+        "1timoteo-3",
+        "isaias-36",
+        "isaias-37"
+      ]
+    },
+    {
+      "day": 306,
+      "chapters": [
+        "1timoteo-4",
+        "isaias-38",
+        "isaias-39"
+      ]
+    },
+    {
+      "day": 307,
+      "chapters": [
+        "1timoteo-5",
+        "jeremias-1",
+        "jeremias-2"
+      ]
+    },
+    {
+      "day": 308,
+      "chapters": [
+        "1timoteo-6",
+        "jeremias-3",
+        "jeremias-4",
+        "salmos-120"
+      ]
+    },
+    {
+      "day": 309,
+      "chapters": [
+        "2timoteo-1",
+        "jeremias-5",
+        "jeremias-6",
+        "salmos-121"
+      ]
+    },
+    {
+      "day": 310,
+      "chapters": [
+        "2timoteo-2",
+        "jeremias-7",
+        "jeremias-8",
+        "salmos-122"
+      ]
+    },
+    {
+      "day": 311,
+      "chapters": [
+        "2timoteo-3",
+        "jeremias-9",
+        "jeremias-10",
+        "salmos-123"
+      ]
+    },
+    {
+      "day": 312,
+      "chapters": [
+        "2timoteo-4",
+        "jeremias-11",
+        "jeremias-12",
+        "salmos-124"
+      ]
+    },
+    {
+      "day": 313,
+      "chapters": [
+        "tito-1",
+        "jeremias-13",
+        "jeremias-14",
+        "jeremias-15",
+        "salmos-125"
+      ]
+    },
+    {
+      "day": 314,
+      "chapters": [
+        "tito-2",
+        "jeremias-16",
+        "salmos-126"
+      ]
+    },
+    {
+      "day": 315,
+      "chapters": [
+        "tito-3",
+        "jeremias-17",
+        "jeremias-18",
+        "salmos-127"
+      ]
+    },
+    {
+      "day": 316,
+      "chapters": [
+        "filemom-1",
+        "jeremias-19",
+        "jeremias-20",
+        "salmos-128"
+      ]
+    },
+    {
+      "day": 317,
+      "chapters": [
+        "tiago-1",
+        "jeremias-21",
+        "jeremias-22",
+        "salmos-129"
+      ]
+    },
+    {
+      "day": 318,
+      "chapters": [
+        "tiago-2",
+        "jeremias-23",
+        "jeremias-24",
+        "salmos-130"
+      ]
+    },
+    {
+      "day": 319,
+      "chapters": [
+        "tiago-3",
+        "jeremias-25",
+        "jeremias-26",
+        "salmos-131"
+      ]
+    },
+    {
+      "day": 320,
+      "chapters": [
+        "tiago-4",
+        "jeremias-27",
+        "jeremias-28",
+        "salmos-132"
+      ]
+    },
+    {
+      "day": 321,
+      "chapters": [
+        "tiago-5",
+        "jeremias-29",
+        "jeremias-30",
+        "salmos-133"
+      ]
+    },
+    {
+      "day": 322,
+      "chapters": [
+        "1pedro-1",
+        "jeremias-31",
+        "jeremias-32",
+        "salmos-134"
+      ]
+    },
+    {
+      "day": 323,
+      "chapters": [
+        "1pedro-2",
+        "jeremias-33",
+        "jeremias-34",
+        "salmos-135"
+      ]
+    },
+    {
+      "day": 324,
+      "chapters": [
+        "1pedro-3",
+        "jeremias-35",
+        "jeremias-36",
+        "salmos-136"
+      ]
+    },
+    {
+      "day": 325,
+      "chapters": [
+        "1pedro-4",
+        "jeremias-37",
+        "jeremias-38",
+        "salmos-137"
+      ]
+    },
+    {
+      "day": 326,
+      "chapters": [
+        "1pedro-5",
+        "jeremias-39",
+        "jeremias-40",
+        "salmos-138"
+      ]
+    },
+    {
+      "day": 327,
+      "chapters": [
+        "2pedro-1",
+        "jeremias-41",
+        "jeremias-42",
+        "salmos-139"
+      ]
+    },
+    {
+      "day": 328,
+      "chapters": [
+        "2pedro-2",
+        "jeremias-43",
+        "jeremias-44",
+        "salmos-140"
+      ]
+    },
+    {
+      "day": 329,
+      "chapters": [
+        "2pedro-3",
+        "jeremias-45",
+        "jeremias-46",
+        "salmos-141"
+      ]
+    },
+    {
+      "day": 330,
+      "chapters": [
+        "galatas-1",
+        "jeremias-47",
+        "jeremias-48",
+        "salmos-142"
+      ]
+    },
+    {
+      "day": 331,
+      "chapters": [
+        "galatas-2",
+        "jeremias-49",
+        "jeremias-50",
+        "salmos-143"
+      ]
+    },
+    {
+      "day": 332,
+      "chapters": [
+        "galatas-3",
+        "jeremias-51",
+        "jeremias-52",
+        "salmos-144"
+      ]
+    },
+    {
+      "day": 333,
+      "chapters": [
+        "galatas-4",
+        "lamentacoes-1",
+        "lamentacoes-2",
+        "salmos-145"
+      ]
+    },
+    {
+      "day": 334,
+      "chapters": [
+        "lamentacoes-3",
+        "lamentacoes-4",
+        "salmos-146"
+      ]
+    },
+    {
+      "day": 335,
+      "chapters": [
+        "galatas-5",
+        "lamentacoes-5",
+        "salmos-147"
+      ]
+    },
+    {
+      "day": 336,
+      "chapters": [
+        "ezequiel-1",
+        "salmos-148"
+      ]
+    },
+    {
+      "day": 337,
+      "chapters": [
+        "galatas-6",
+        "ezequiel-2",
+        "ezequiel-3",
+        "salmos-149"
+      ]
+    },
+    {
+      "day": 338,
+      "chapters": [
+        "efesios-1",
+        "ezequiel-4",
+        "ezequiel-5",
+        "salmos-150"
+      ]
+    },
+    {
+      "day": 339,
+      "chapters": [
+        "efesios-2",
+        "ezequiel-6",
+        "ezequiel-7",
+        "isaias-40"
+      ]
+    },
+    {
+      "day": 340,
+      "chapters": [
+        "efesios-3",
+        "ezequiel-8",
+        "ezequiel-9",
+        "isaias-41"
+      ]
+    },
+    {
+      "day": 341,
+      "chapters": [
+        "efesios-4",
+        "ezequiel-10",
+        "ezequiel-11",
+        "isaias-42"
+      ]
+    },
+    {
+      "day": 342,
+      "chapters": [
+        "ezequiel-12",
+        "ezequiel-13",
+        "isaias-43"
+      ]
+    },
+    {
+      "day": 343,
+      "chapters": [
+        "efesios-5",
+        "ezequiel-14",
+        "ezequiel-15",
+        "isaias-44"
+      ]
+    },
+    {
+      "day": 344,
+      "chapters": [
+        "ezequiel-16",
+        "isaias-45"
+      ]
+    },
+    {
+      "day": 345,
+      "chapters": [
+        "efesios-6",
+        "ezequiel-17",
+        "isaias-46"
+      ]
+    },
+    {
+      "day": 346,
+      "chapters": [
+        "filipenses-1",
+        "ezequiel-18",
+        "isaias-47"
+      ]
+    },
+    {
+      "day": 347,
+      "chapters": [
+        "ezequiel-19",
+        "isaias-48"
+      ]
+    },
+    {
+      "day": 348,
+      "chapters": [
+        "filipenses-2",
+        "ezequiel-20",
+        "isaias-49"
+      ]
+    },
+    {
+      "day": 349,
+      "chapters": [
+        "ezequiel-21",
+        "ezequiel-22",
+        "isaias-50"
+      ]
+    },
+    {
+      "day": 350,
+      "chapters": [
+        "filipenses-3",
+        "ezequiel-23",
+        "isaias-51"
+      ]
+    },
+    {
+      "day": 351,
+      "chapters": [
+        "filipenses-4",
+        "ezequiel-24",
+        "isaias-52"
+      ]
+    },
+    {
+      "day": 352,
+      "chapters": [
+        "colossenses-1",
+        "ezequiel-25",
+        "ezequiel-26",
+        "isaias-53"
+      ]
+    },
+    {
+      "day": 353,
+      "chapters": [
+        "colossenses-2",
+        "ezequiel-27",
+        "ezequiel-28",
+        "isaias-54"
+      ]
+    },
+    {
+      "day": 354,
+      "chapters": [
+        "colossenses-3",
+        "ezequiel-29",
+        "ezequiel-30",
+        "isaias-55"
+      ]
+    },
+    {
+      "day": 355,
+      "chapters": [
+        "colossenses-4",
+        "ezequiel-31",
+        "ezequiel-32",
+        "isaias-56"
+      ]
+    },
+    {
+      "day": 356,
+      "chapters": [
+        "lucas-1",
+        "ezequiel-33",
+        "isaias-57"
+      ]
+    },
+    {
+      "day": 357,
+      "chapters": [
+        "ezequiel-34",
+        "isaias-58"
+      ]
+    },
+    {
+      "day": 358,
+      "chapters": [
+        "ezequiel-35",
+        "ezequiel-36",
+        "isaias-59"
+      ]
+    },
+    {
+      "day": 359,
+      "chapters": [
+        "lucas-2",
+        "ezequiel-37",
+        "isaias-60"
+      ]
+    },
+    {
+      "day": 360,
+      "chapters": [
+        "ezequiel-38",
+        "ezequiel-39",
+        "isaias-61"
+      ]
+    },
+    {
+      "day": 361,
+      "chapters": [
+        "lucas-3",
+        "ezequiel-40",
+        "ezequiel-41",
+        "isaias-62"
+      ]
+    },
+    {
+      "day": 362,
+      "chapters": [
+        "ezequiel-42",
+        "ezequiel-43",
+        "isaias-63"
+      ]
+    },
+    {
+      "day": 363,
+      "chapters": [
+        "lucas-4",
+        "ezequiel-44",
+        "ezequiel-45",
+        "isaias-64"
+      ]
+    },
+    {
+      "day": 364,
+      "chapters": [
+        "ezequiel-46",
+        "ezequiel-47",
+        "isaias-65"
+      ]
+    },
+    {
+      "day": 365,
+      "chapters": [
+        "ezequiel-48",
+        "isaias-66"
+      ]
+    }
+  ]
+}
