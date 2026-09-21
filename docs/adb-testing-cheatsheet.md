@@ -109,6 +109,27 @@ adb -s <device-id> uninstall <applicationId-antigo>
 `applicationId` atual do projeto: `com.emanuel.leituradiaria` (era
 `com.example.leitura_diaria` antes do rebrand).
 
+## Supabase (banco remoto)
+
+Comandos pra aplicar migrations direto no Postgres do projeto Supabase (não
+precisa da CLI do Supabase instalada — `psql` já resolve):
+
+```bash
+# Credenciais ficam em .env (não versionado) / senhas.md — nunca colar a
+# senha em texto puro num comando/histórico compartilhado.
+PGPASSWORD="$SUPABASE_DB_PASSWORD" psql -h db.<project-ref>.supabase.co \
+  -p 5432 -U postgres -d postgres -v ON_ERROR_STOP=1 \
+  -f supabase/migrations/000X_nome.sql
+```
+
+- `<project-ref>` é o subdomínio da `SUPABASE_URL` (ex: URL
+  `https://szgtwzltwlylcgtwhlvx.supabase.co` → ref `szgtwzltwlylcgtwhlvx`).
+- A senha do banco tem caracteres especiais (backtick, `<`, `[`); sempre usar
+  aspas simples ao redor do valor pra não deixar o shell interpretar nada.
+- Migrations do projeto ficam em `supabase/migrations/`; cada arquivo é
+  idempotente (`create table if not exists`, `create index if not exists`) —
+  seguro rodar de novo se não tiver certeza se já foi aplicado.
+
 ## Notificação/cortina do sistema atrapalhando
 
 Notificações reais do celular (WhatsApp, apps do dia a dia) às vezes abrem

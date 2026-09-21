@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import '../../data/database/queries.dart';
 import '../../data/models/book.dart';
 import '../../state/reading_plan_provider.dart';
-import '../today/widgets/chapter_card.dart';
+import '../../widgets/chapter_card.dart';
 
 /// Lets the user mark any chapter of a book as read/unread on its own,
 /// independent of the day it falls on in the plan (catch-up, reading ahead,

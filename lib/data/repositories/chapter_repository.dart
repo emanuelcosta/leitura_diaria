@@ -1,5 +1,6 @@
 import '../database/app_database.dart';
 import '../database/queries.dart';
+import '../models/chapter.dart';
 
 class OverallProgress {
   final int readCount;
@@ -43,7 +44,7 @@ class ChapterRepository {
   Future<List<ChapterView>> getChaptersWithNotes() async {
     final db = await AppDatabase.instance.database;
     final rows = await db.rawQuery(
-      '$chapterWithBookSelect WHERE chapters.note IS NOT NULL AND chapters.note != "" '
+      "$chapterWithBookSelect WHERE chapters.note IS NOT NULL AND chapters.note != '' "
       'ORDER BY chapters.read_at DESC',
     );
     return rows.map(ChapterView.fromMap).toList();
@@ -62,6 +63,22 @@ class ChapterRepository {
       },
       where: 'id = ?',
       whereArgs: [chapterId],
+    );
+  }
+
+  /// Marks every chapter of a book read/unread in one shot (e.g. "mark whole
+  /// book as read"). Clears notes when unmarking, same as [setRead].
+  Future<void> setAllReadForBook(String bookId, {required bool isRead}) async {
+    final db = await AppDatabase.instance.database;
+    await db.update(
+      'chapters',
+      {
+        'is_read': isRead ? 1 : 0,
+        'read_at': isRead ? DateTime.now().toIso8601String() : null,
+        'note': null,
+      },
+      where: 'book_id = ?',
+      whereArgs: [bookId],
     );
   }
 
@@ -111,9 +128,62 @@ class ChapterRepository {
     return {for (final r in rows) r['d'] as String: r['c'] as int};
   }
 
+  /// Timestamp of the most recently read chapter, or null if nothing has
+  /// been read yet. Used to date-stamp the "you finished the plan" state
+  /// (see ScheduleCalculator.computeStatus's `completed` branch).
+  Future<DateTime?> getLastReadAt() async {
+    final db = await AppDatabase.instance.database;
+    final rows = await db.rawQuery('SELECT MAX(read_at) as last FROM chapters WHERE is_read = 1');
+    final value = rows.first['last'] as String?;
+    return value == null ? null : DateTime.parse(value);
+  }
+
   /// Soft reset: clears read state everywhere without touching row identity.
   Future<void> resetAllProgress() async {
     final db = await AppDatabase.instance.database;
     await db.update('chapters', {'is_read': 0, 'read_at': null, 'note': null});
+  }
+
+  /// All chapters with their raw read state, for pushing to a remote sync target.
+  Future<List<Chapter>> getAllChapters() async {
+    final db = await AppDatabase.instance.database;
+    final rows = await db.query('chapters');
+    return rows.map(Chapter.fromMap).toList();
+  }
+
+  Future<Chapter?> getChapterRaw(String chapterId) async {
+    final db = await AppDatabase.instance.database;
+    final rows = await db.query('chapters', where: 'id = ?', whereArgs: [chapterId]);
+    if (rows.isEmpty) return null;
+    return Chapter.fromMap(rows.first);
+  }
+
+  Future<List<Chapter>> getChaptersRawForBook(String bookId) async {
+    final db = await AppDatabase.instance.database;
+    final rows = await db.query('chapters', where: 'book_id = ?', whereArgs: [bookId]);
+    return rows.map(Chapter.fromMap).toList();
+  }
+
+  /// Overwrites local read state for each (bookId, chapterNumber) pair with
+  /// remote values pulled from sync. Chapter ids are deterministically
+  /// `'$bookId-$chapterNumber'` (see SeedLoader), so no lookup is needed.
+  Future<void> applyRemoteState(
+    Iterable<({String bookId, int chapterNumber, bool isRead, DateTime? readAt, String? note})> rows,
+  ) async {
+    final db = await AppDatabase.instance.database;
+    final batch = db.batch();
+    for (final row in rows) {
+      batch.update(
+        'chapters',
+        {
+          'is_read': row.isRead ? 1 : 0,
+          'read_at': row.readAt?.toIso8601String(),
+          'note': row.note,
+        },
+        where: 'id = ?',
+        whereArgs: ['${row.bookId}-${row.chapterNumber}'],
+      );
+    }
+    await batch.commit(noResult: true);
   }
 }

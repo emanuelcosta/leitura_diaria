@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "leitura_diaria" "\0"
+            VALUE "CompanyName", "com.emanuel" "\0"
+            VALUE "FileDescription", "Bíblia em 1 Ano" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "leitura_diaria" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.example. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 com.emanuel. All rights reserved." "\0"
             VALUE "OriginalFilename", "leitura_diaria.exe" "\0"
-            VALUE "ProductName", "leitura_diaria" "\0"
+            VALUE "ProductName", "Bíblia em 1 Ano" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

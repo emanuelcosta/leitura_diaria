@@ -3,18 +3,6 @@
 Itens identificados durante o desenvolvimento que não foram tratados por não
 fazerem parte do que foi pedido até agora. Ficam aqui para decisão futura.
 
-## Identidade do app nas demais plataformas
-
-Só o Android foi rebrandeado (`com.emanuel.leituradiaria` / "Bíblia em 1 Ano"),
-porque é a única plataforma testada até agora. Ainda usam o nome padrão do
-template Flutter (`com.example.*` / "leitura_diaria"):
-
-- `ios/Runner.xcodeproj/project.pbxproj` (PRODUCT_BUNDLE_IDENTIFIER)
-- `ios/Runner/Info.plist` (CFBundleDisplayName / CFBundleName)
-- `macos/Runner.xcodeproj/project.pbxproj` e `macos/Runner/Configs/AppInfo.xcconfig`
-- `linux/CMakeLists.txt` (BINARY_NAME / APPLICATION_ID)
-- `windows/runner/Runner.rc`, `windows/runner/main.cpp`, `windows/CMakeLists.txt`
-
 ## Suporte a desktop/web
 
 `sqflite` não funciona em Chrome/Edge (web) nem em Windows/macOS/Linux
@@ -22,34 +10,23 @@ desktop sem configurar `sqflite_common_ffi` no `AppDatabase._open()` (hoje só
 usado em testes). Só Android/iOS funcionam sem ajuste. Não mexido porque o
 app é pensado para celular.
 
-## Tela de Livros: filtros, marcar tudo e agrupamentos
+## Backend com Supabase: UI otimista
 
-- Filtro na tela "Livros" (ex: por testamento, por lido/não lido, por nome).
-- Opção de marcar todos os capítulos de um livro como lido de uma vez (hoje
-  só dá para marcar capítulo por capítulo em `BookChaptersScreen`).
-- Agrupamento de livros por categoria (histórico, poético, evangelhos,
-  cartas, profético etc.), não só por Antigo/Novo Testamento como hoje.
+O schema (`chapter_progress` com RLS), o login por email/senha (Supabase
+Auth) e a sincronização em si (push a cada mutação local, pull/merge no
+login) já estão implementados — ver `SyncRepository`, `AuthProvider` e os
+métodos `_push*`/`pullFromRemoteAndMerge` em `ReadingPlanProvider`. A decisão
+de arquitetura foi acessar o Supabase direto do Flutter com Row Level
+Security, sem servidor Express intermediário (o Supabase não hospeda Express
+de qualquer forma — só Postgres/Auth/Storage/Edge Functions em Deno).
 
-## Backend com Supabase e sincronização de conta
+Ainda falta a parte de UX: tornar as operações do app (marcar capítulo lido,
+salvar nota, etc.) assíncronas/otimistas na UI, para não recarregar a tela
+bruscamente a cada ação — hoje cada `setChapterRead`/`setChapterNote` dispara
+`notifyListeners()` e refaz o `FutureBuilder` da tela inteira (o próprio
+gravar local já é rápido; o ponto é evitar o flicker de rebuild, não a
+latência de rede). Isso é uma refatoração maior de estado, ortogonal ao
+Supabase, que toca a maioria das telas (`TodayScreen`, `BookChaptersScreen`,
+`BookProgressScreen`, `DashboardScreen`, `HeatmapScreen`) — melhor tratar
+como uma tarefa própria.
 
-Hoje tudo é local (SQLite via `sqflite`, sem conta de usuário). Para dar
-suporte a login e sincronizar o progresso entre aparelhos, falta:
-
-- Criar o banco de dados no Supabase (schema equivalente a `books`/`chapters`
-  hoje local, mais tabela de usuários/progresso por conta).
-- Login com email e senha (Supabase Auth).
-- Integração dos registros do app (capítulos lidos, notas, streak) com o
-  banco do Supabase — hoje só grava no SQLite local.
-- API backend em Express rodando no servidor do Supabase, para mediar essas
-  operações em vez do app falar direto com o banco.
-- Tornar as operações do app (marcar capítulo lido, salvar nota, etc.)
-  assíncronas/otimistas na UI, para não recarregar a tela bruscamente a cada
-  ação (hoje cada `setChapterRead`/`setChapterNote` dispara
-  `notifyListeners()` e refaz o `FutureBuilder` da tela inteira).
-
-## Aviso de SQL
-
-Log do dispositivo mostrou `W/SQLiteLog: double-quoted string literal: ""`
-vindo de `ChapterRepository.getChaptersWithNotes()` (comparação
-`note != ""` usa aspas duplas, que o SQLite trata como identificador
-depreciado). Não quebra nada hoje, mas seria bom trocar para aspas simples.

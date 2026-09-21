@@ -38,7 +38,7 @@ class _NotesListScreenState extends State<NotesListScreen> {
         return ListView.separated(
           itemCount: notes.length,
           separatorBuilder: (_, _) => const Divider(height: 1),
-          itemBuilder: (context, i) => NoteTile(view: notes[i], onChanged: _refresh),
+          itemBuilder: (context, i) => NoteTile(view: notes[i], books: plan.meta.books, onChanged: _refresh),
         );
       },
     );

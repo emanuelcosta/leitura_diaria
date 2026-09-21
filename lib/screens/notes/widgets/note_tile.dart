@@ -3,21 +3,35 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../data/database/queries.dart';
+import '../../../data/models/book.dart';
 import '../../../state/reading_plan_provider.dart';
+import '../../../widgets/book_mention_field.dart';
+import '../../../widgets/reference_text.dart';
+import '../../reading/chapter_reading_screen.dart';
 
 class NoteTile extends StatelessWidget {
   final ChapterView view;
+  final List<Book> books;
   final VoidCallback onChanged;
 
-  const NoteTile({super.key, required this.view, required this.onChanged});
+  const NoteTile({super.key, required this.view, required this.books, required this.onChanged});
 
   Future<void> _edit(BuildContext context) async {
     final controller = TextEditingController(text: view.chapter.note ?? '');
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
+        scrollable: true,
         title: Text(view.label),
-        content: TextField(controller: controller, maxLines: 4, autofocus: true),
+        content: BookMentionTextField(
+          controller: controller,
+          books: books,
+          maxLines: 4,
+          autofocus: true,
+          decoration: const InputDecoration(
+            helperText: 'Dica: @Sigla cap vers linka outro texto (ex: @Jo 3 16)',
+          ),
+        ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
           FilledButton(
@@ -41,7 +55,11 @@ class NoteTile extends StatelessWidget {
     final readAt = view.chapter.readAt;
     return ListTile(
       title: Text(view.label, style: const TextStyle(fontWeight: FontWeight.w600)),
-      subtitle: Text(view.chapter.note ?? ''),
+      subtitle: ReferenceText(
+        text: view.chapter.note ?? '',
+        books: books,
+        onReferenceTap: openBibleReference,
+      ),
       trailing: readAt != null ? Text(DateFormat('dd/MM/yy').format(readAt)) : null,
       onTap: () => _edit(context),
     );

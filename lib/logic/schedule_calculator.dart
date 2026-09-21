@@ -1,4 +1,5 @@
 /// Pure schedule math: no Flutter/DB imports, so it's trivially unit-testable.
+/// Full write-up with worked examples: docs/schedule-calculation.md.
 ///
 /// The plan has [totalPlanDays] days and [totalChapters] chapters overall.
 /// [planCumulative] must have length totalPlanDays + 1, where planCumulative[d]

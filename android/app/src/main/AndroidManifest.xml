@@ -24,6 +24,15 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Deep link Supabase uses to return to the app after email
+                 confirmation / password recovery (see AuthService, whose
+                 emailRedirectTo must match this scheme + host exactly). -->
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="com.emanuel.leituradiaria" android:host="login-callback"/>
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
@@ -44,6 +53,9 @@
     </application>
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <!-- Needed in release/profile builds too (not just debug) for Supabase
+         sync and on-demand dictionary translation. -->
+    <uses-permission android:name="android.permission.INTERNET"/>
 
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

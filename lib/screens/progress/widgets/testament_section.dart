@@ -11,12 +11,22 @@ class TestamentSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final read = books.fold<int>(0, (sum, b) => sum + b.readCount);
-    final total = books.fold<int>(0, (sum, b) => sum + b.book.chapterCount);
+    final totalChapters = books.fold<int>(0, (sum, b) => sum + b.book.chapterCount);
+    final readChapters = books.fold<int>(0, (sum, b) => sum + b.readCount);
+    final missingChapters = totalChapters - readChapters;
+
+    final totalBooks = books.length;
+    final completeBooks = books.where((b) => b.readCount >= b.book.chapterCount).length;
+    final missingBooks = totalBooks - completeBooks;
+
+    final subtitle = missingChapters == 0
+        ? 'Completo — $totalBooks livros, $totalChapters capítulos'
+        : 'Faltam $missingBooks de $totalBooks livros · $missingChapters de $totalChapters capítulos';
+
     return ExpansionTile(
       initiallyExpanded: true,
       title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-      subtitle: Text('$read / $total capítulos'),
+      subtitle: Text(subtitle),
       children: books.map((b) => BookProgressTile(progress: b)).toList(),
     );
   }

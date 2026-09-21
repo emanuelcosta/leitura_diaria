@@ -11,6 +11,7 @@ class LeituraDiariaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
     return MaterialApp(
       title: 'Leitura Diária',
       debugShowCheckedModeBanner: false,
@@ -18,6 +19,14 @@ class LeituraDiariaApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3F6E52)),
         useMaterial3: true,
       ),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF3F6E52),
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
+      themeMode: settings.themeMode,
       home: const _AppGate(),
     );
   }

@@ -42,6 +42,9 @@ dependencies:
   shared_preferences: ^2.5.5
   intl: ^0.20.3
   path: ^1.9.1
+  supabase_flutter: ^2.8.0
+  flutter_dotenv: ^5.2.1
+  http: ^1.2.2
 
 dev_dependencies:
   flutter_test:
@@ -77,6 +80,10 @@ flutter:
   assets:
     - assets/reading_plan.json
     - assets/images/logo.png
+    - assets/bible/acf.json
+    - assets/bible/arc.json
+    - assets/dictionary/easton_smith.json
+    - .env
 
   # To add assets to your application, add an assets section, like this:
   # assets:

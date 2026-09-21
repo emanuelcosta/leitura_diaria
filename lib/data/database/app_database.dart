@@ -18,8 +18,22 @@ class AppDatabase {
     final path = p.join(dbPath, 'reading_diary.db');
     return openDatabase(
       path,
-      version: 1,
+      version: 5,
       onCreate: (db, version) => createSchema(db),
+      onUpgrade: (db, oldVersion, newVersion) async {
+        if (oldVersion < 2) {
+          await _createFavoriteVerses(db);
+        }
+        if (oldVersion < 3) {
+          await _createVerseNotes(db);
+        }
+        if (oldVersion < 4) {
+          await _createDoubtVerses(db);
+        }
+        if (oldVersion < 5) {
+          await db.execute('ALTER TABLE doubt_verses ADD COLUMN note TEXT');
+        }
+      },
     );
   }
 
@@ -50,6 +64,67 @@ class AppDatabase {
     await db.execute('CREATE INDEX idx_chapters_plan_day ON chapters(plan_day)');
     await db.execute(
       'CREATE INDEX idx_chapters_read_at ON chapters(read_at) WHERE is_read = 1',
+    );
+    await _createFavoriteVerses(db);
+    await _createVerseNotes(db);
+    await _createDoubtVerses(db);
+  }
+
+  static Future<void> _createFavoriteVerses(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS favorite_verses (
+        id TEXT PRIMARY KEY,
+        book_id TEXT NOT NULL,
+        chapter_number INTEGER NOT NULL,
+        verse_number INTEGER NOT NULL,
+        created_at TEXT NOT NULL
+      )
+    ''');
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_favorite_verses_chapter '
+      'ON favorite_verses(book_id, chapter_number)',
+    );
+  }
+
+  /// A verse note is independent of favoriting — a verse can have a note
+  /// without being favorited, and vice versa, so this stays its own table
+  /// rather than a nullable column bolted onto favorite_verses (where a
+  /// row's mere existence means "favorited").
+  static Future<void> _createVerseNotes(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS verse_notes (
+        id TEXT PRIMARY KEY,
+        book_id TEXT NOT NULL,
+        chapter_number INTEGER NOT NULL,
+        verse_number INTEGER NOT NULL,
+        note TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    ''');
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_verse_notes_chapter '
+      'ON verse_notes(book_id, chapter_number)',
+    );
+  }
+
+  /// Same shape/existence-means-marked convention as favorite_verses, but a
+  /// separate concern: a verse can be favorited, doubted, both, or neither
+  /// independently. [note] is optional — why the user marked it, so they
+  /// remember what they were thinking later.
+  static Future<void> _createDoubtVerses(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS doubt_verses (
+        id TEXT PRIMARY KEY,
+        book_id TEXT NOT NULL,
+        chapter_number INTEGER NOT NULL,
+        verse_number INTEGER NOT NULL,
+        note TEXT,
+        created_at TEXT NOT NULL
+      )
+    ''');
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_doubt_verses_chapter '
+      'ON doubt_verses(book_id, chapter_number)',
     );
   }
 
