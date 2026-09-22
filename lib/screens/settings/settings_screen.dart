@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../data/repositories/bible_text_repository.dart';
-import '../../services/notification_service.dart';
+import '../../services/push_notification_service.dart';
 import '../../services/translation_service.dart';
 import '../../state/auth_provider.dart';
 import '../../state/reading_plan_provider.dart';
 import '../../state/settings_provider.dart';
 import '../../widgets/confirm_dialog.dart';
-import 'widgets/auth_dialog.dart';
+import '../../widgets/section_header.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -28,27 +28,27 @@ class SettingsScreen extends StatelessWidget {
   Future<void> _toggleReminder(
     BuildContext context,
     SettingsProvider settings,
-    NotificationService notifications,
+    PushNotificationService pushNotifications,
     bool enabled,
   ) async {
     if (enabled) {
-      final granted = await notifications.requestPermission();
+      final granted = await pushNotifications.requestPermission();
       if (!granted) return;
       await settings.setReminder(enabled: true);
-      await notifications.scheduleDailyReminder(
+      await pushNotifications.enableDailyReminder(
         hour: settings.reminderHour,
         minute: settings.reminderMinute,
       );
     } else {
       await settings.setReminder(enabled: false);
-      await notifications.cancelDailyReminder();
+      await pushNotifications.disableDailyReminder();
     }
   }
 
   Future<void> _pickTime(
     BuildContext context,
     SettingsProvider settings,
-    NotificationService notifications,
+    PushNotificationService pushNotifications,
   ) async {
     final picked = await showTimePicker(
       context: context,
@@ -57,21 +57,8 @@ class SettingsScreen extends StatelessWidget {
     if (picked != null) {
       await settings.setReminder(enabled: settings.reminderEnabled, hour: picked.hour, minute: picked.minute);
       if (settings.reminderEnabled) {
-        await notifications.scheduleDailyReminder(hour: picked.hour, minute: picked.minute);
+        await pushNotifications.enableDailyReminder(hour: picked.hour, minute: picked.minute);
       }
-    }
-  }
-
-  Future<void> _signOut(BuildContext context) async {
-    final confirmed = await showConfirmDialog(
-      context,
-      title: 'Sair da conta',
-      message: 'Seu progresso continua salvo neste aparelho. Você pode entrar novamente '
-          'a qualquer momento para voltar a sincronizar.',
-      confirmLabel: 'Sair',
-    );
-    if (confirmed && context.mounted) {
-      await context.read<AuthProvider>().signOut();
     }
   }
 
@@ -98,7 +85,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
     final auth = context.watch<AuthProvider>();
-    final notifications = context.read<NotificationService>();
+    final pushNotifications = context.read<PushNotificationService>();
     final startDate = settings.startDate;
     final formattedDate = startDate == null
         ? '-'
@@ -110,21 +97,7 @@ class SettingsScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Configurações')),
       body: ListView(
         children: [
-          const _SectionHeader('Conta'),
-          ListTile(
-            leading: const Icon(Icons.cloud_outlined),
-            title: const Text('Conta'),
-            subtitle: Text(
-              auth.isSignedIn
-                  ? 'Sincronizado como ${auth.user!.email}'
-                  : 'Entrar para sincronizar entre aparelhos',
-            ),
-            trailing: auth.isSignedIn
-                ? TextButton(onPressed: () => _signOut(context), child: const Text('Sair'))
-                : null,
-            onTap: auth.isSignedIn ? null : () => showAuthDialog(context),
-          ),
-          const _SectionHeader('Leitura'),
+          const SectionHeader(title: 'Leitura'),
           ListTile(
             leading: const Icon(Icons.calendar_today_outlined),
             title: const Text('Data de início'),
@@ -182,22 +155,30 @@ class SettingsScreen extends StatelessWidget {
               },
             ),
           ),
-          const _SectionHeader('Notificações'),
+          const SectionHeader(title: 'Notificações'),
           SwitchListTile(
             secondary: const Icon(Icons.notifications_outlined),
             title: const Text('Lembrete diário'),
-            subtitle: Text(settings.reminderEnabled ? 'Ativado às $formattedTime' : 'Desativado'),
+            subtitle: Text(
+              !auth.isSignedIn
+                  ? 'Entre na sua conta para ativar o lembrete diário'
+                  : settings.reminderEnabled
+                      ? 'Ativado às $formattedTime'
+                      : 'Desativado',
+            ),
             value: settings.reminderEnabled,
-            onChanged: (v) => _toggleReminder(context, settings, notifications, v),
+            onChanged: auth.isSignedIn
+                ? (v) => _toggleReminder(context, settings, pushNotifications, v)
+                : null,
           ),
-          if (settings.reminderEnabled)
+          if (auth.isSignedIn && settings.reminderEnabled)
             ListTile(
               leading: const SizedBox(width: 24),
               title: const Text('Horário do lembrete'),
               subtitle: Text(formattedTime),
-              onTap: () => _pickTime(context, settings, notifications),
+              onTap: () => _pickTime(context, settings, pushNotifications),
             ),
-          const _SectionHeader('Zona de risco'),
+          const SectionHeader(title: 'Zona de risco'),
           ListTile(
             leading: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
             title: Text('Resetar progresso', style: TextStyle(color: Theme.of(context).colorScheme.error)),
@@ -206,26 +187,6 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 8),
         ],
-      ),
-    );
-  }
-}
-
-class _SectionHeader extends StatelessWidget {
-  final String label;
-
-  const _SectionHeader(this.label);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: Theme.of(context).colorScheme.primary,
-              fontWeight: FontWeight.bold,
-            ),
       ),
     );
   }

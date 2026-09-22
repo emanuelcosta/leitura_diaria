@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "703117678142",
+    "project_id": "leituradiarianotifications",
+    "storage_bucket": "leituradiarianotifications.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:703117678142:android:8a3613aeec8fdbef52e36f",
+        "android_client_info": {
+          "package_name": "com.emanuel.leituradiaria"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1u3FkbYSfTu30J6F-dGl6wyhqCyoPfY4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

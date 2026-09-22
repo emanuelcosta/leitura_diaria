@@ -116,16 +116,25 @@ precisa da CLI do Supabase instalada — `psql` já resolve):
 
 ```bash
 # Credenciais ficam em .env (não versionado) / senhas.md — nunca colar a
-# senha em texto puro num comando/histórico compartilhado.
-PGPASSWORD="$SUPABASE_DB_PASSWORD" psql -h db.<project-ref>.supabase.co \
-  -p 5432 -U postgres -d postgres -v ON_ERROR_STOP=1 \
+# senha em texto puro num comando/histórico compartilhado. Este comando lê
+# a senha direto do .env, sem precisar de um passo separado de `export`.
+PGPASSWORD="$(grep -m1 '^SUPABASE_DB_PASSWORD=' .env | cut -d= -f2-)" \
+  psql -h aws-0-us-east-2.pooler.supabase.com -p 5432 \
+  -U postgres.<project-ref> -d postgres -v ON_ERROR_STOP=1 \
   -f supabase/migrations/000X_nome.sql
 ```
 
 - `<project-ref>` é o subdomínio da `SUPABASE_URL` (ex: URL
   `https://szgtwzltwlylcgtwhlvx.supabase.co` → ref `szgtwzltwlylcgtwhlvx`).
+- **Usar o connection pooler (Session pooler), não o host `db.<project-ref>.supabase.co`
+  direto** — o host direto só resolve em IPv6 e dá `Connection timed out` em
+  redes sem rota IPv6 funcionando. Host/usuário do pooler ficam em Project
+  Settings > Database > Connection string > "Session pooler" no painel do
+  Supabase (username vem no formato `postgres.<project-ref>`, diferente do
+  `postgres` puro da conexão direta).
 - A senha do banco tem caracteres especiais (backtick, `<`, `[`); sempre usar
-  aspas simples ao redor do valor pra não deixar o shell interpretar nada.
+  aspas simples ao redor do valor pra não deixar o shell interpretar nada —
+  por isso o comando acima já extrai ela com `cut` em vez de colar solto.
 - Migrations do projeto ficam em `supabase/migrations/`; cada arquivo é
   idempotente (`create table if not exists`, `create index if not exists`) —
   seguro rodar de novo se não tiver certeza se já foi aplicado.

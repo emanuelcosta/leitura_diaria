@@ -40,19 +40,8 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <!-- Lets the daily reading reminder survive a device reboot. -->
-        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
-        <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
-                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
-                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
-            </intent-filter>
-        </receiver>
     </application>
 
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <!-- Needed in release/profile builds too (not just debug) for Supabase
          sync and on-demand dictionary translation. -->
     <uses-permission android:name="android.permission.INTERNET"/>

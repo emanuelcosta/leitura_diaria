@@ -3,6 +3,8 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    // Reads android/app/google-services.json to configure Firebase Cloud Messaging.
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -13,7 +15,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-        // Required by flutter_local_notifications for scheduled (daily reminder) notifications.
+        // Required by flutter_local_notifications (uses java.time internally).
         isCoreLibraryDesugaringEnabled = true
     }
 
@@ -25,7 +27,9 @@ android {
         applicationId = "com.emanuel.leituradiaria"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // firebase_messaging requires 23+; flutter.minSdkVersion alone isn't
+        // guaranteed to be that high.
+        minSdk = maxOf(flutter.minSdkVersion, 23)
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

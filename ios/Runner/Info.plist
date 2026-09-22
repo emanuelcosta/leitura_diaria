@@ -60,6 +60,14 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Lets FCM deliver notifications while the app is backgrounded/terminated.
+	     Push Notifications + Background Modes capabilities also need to be
+	     enabled in Xcode (Signing & Capabilities) once GoogleService-Info.plist
+	     is added. -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
