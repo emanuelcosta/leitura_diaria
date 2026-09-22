@@ -9,6 +9,9 @@ import '../../state/reading_plan_provider.dart';
 import '../../state/settings_provider.dart';
 import '../../widgets/chapter_card.dart';
 import '../../widgets/empty_state.dart';
+import '../../widgets/section_header.dart';
+import '../heatmap/heatmap_screen.dart';
+import '../heatmap/widgets/heatmap_grid.dart';
 import 'widgets/continue_reading_card.dart';
 import 'widgets/day_navigator.dart';
 import 'widgets/doubts_summary_card.dart';
@@ -90,13 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
             else
               ...chapters.map((c) => ChapterCard(view: c)),
             const Divider(height: 33),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                'Seu progresso',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-            ),
+            const SectionHeader(title: 'Seu progresso'),
             const SizedBox(height: 16),
             Center(
               child: ProgressRing(
@@ -116,6 +113,25 @@ class _HomeScreenState extends State<HomeScreen> {
                   return StreakBadge(current: streak?.currentStreak ?? 0, best: streak?.bestStreak ?? 0);
                 },
               ),
+            ),
+            SectionHeader(
+              title: 'Constância',
+              trailing: TextButton(
+                onPressed: () => Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const HeatmapScreen()),
+                ),
+                child: const Text('Ver tudo'),
+              ),
+            ),
+            FutureBuilder<Map<String, int>>(
+              key: ValueKey(progress.readCount),
+              future: plan.getReadCountsByDate(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()));
+                }
+                return HeatmapGrid(countsByDate: snapshot.data!, weeksToShow: 8);
+              },
             ),
             const SizedBox(height: 16),
             Padding(

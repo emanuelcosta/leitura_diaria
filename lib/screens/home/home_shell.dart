@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../dictionary/dictionary_screen.dart';
 import '../doubts/doubts_screen.dart';
 import '../favorites/favorites_screen.dart';
-import '../heatmap/heatmap_screen.dart';
 import '../notes/notes_screen.dart';
 import '../progress/book_progress_screen.dart';
 import '../settings/settings_screen.dart';
@@ -21,12 +20,11 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
 
-  static const _titles = ['Início', 'Livros', 'Constância', 'Notas'];
+  static const _titles = ['Início', 'Livros', 'Notas'];
 
   static const _tabs = [
     HomeScreen(),
     BookProgressScreen(),
-    HeatmapScreen(),
     NotesScreen(),
   ];
 
@@ -93,7 +91,6 @@ class _HomeShellState extends State<HomeShell> {
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Início'),
           NavigationDestination(icon: Icon(Icons.menu_book_outlined), selectedIcon: Icon(Icons.menu_book), label: 'Livros'),
-          NavigationDestination(icon: Icon(Icons.calendar_view_month_outlined), selectedIcon: Icon(Icons.calendar_view_month), label: 'Constância'),
           NavigationDestination(icon: Icon(Icons.sticky_note_2_outlined), selectedIcon: Icon(Icons.sticky_note_2), label: 'Notas'),
         ],
       ),
