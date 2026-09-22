@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
 
+import '../doubts/doubts_screen.dart';
 import '../verse_notes/verse_notes_screen.dart';
 import 'notes_list_screen.dart';
 
-/// Unifies the two note-taking surfaces — chapter notes (NotesListScreen)
-/// and verse comments (VerseNotesScreen) — under one "Notas" tab instead of
-/// splitting them across a tab and a hidden "Mais" menu item, since to the
-/// user both are just "things I wrote while reading."
+/// Unifies everything the user writes or flags while reading — chapter notes
+/// (NotesListScreen), verse comments (VerseNotesScreen) and "dúvida" verses
+/// (DoubtsScreen, a note with an extra "preciso pesquisar isso" flag) — under
+/// one "Notas" tab instead of splitting them across a tab and a hidden menu.
 class NotesScreen extends StatelessWidget {
   const NotesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Column(
         children: [
           const Material(
@@ -21,6 +22,7 @@ class NotesScreen extends StatelessWidget {
               tabs: [
                 Tab(text: 'Por capítulo'),
                 Tab(text: 'Por versículo'),
+                Tab(text: 'Dúvidas'),
               ],
             ),
           ),
@@ -29,6 +31,7 @@ class NotesScreen extends StatelessWidget {
               children: [
                 NotesListScreen(),
                 VerseNotesScreen(),
+                DoubtsScreen(),
               ],
             ),
           ),

@@ -5,18 +5,18 @@ import '../../state/auth_provider.dart';
 import '../../widgets/confirm_dialog.dart';
 import '../../widgets/section_header.dart';
 import '../dictionary/dictionary_screen.dart';
-import '../doubts/doubts_screen.dart';
 import '../favorites/favorites_screen.dart';
 import '../settings/settings_screen.dart';
 import 'widgets/auth_dialog.dart';
 
-/// The app's 4th tab: account + the shortcuts and preferences that don't
-/// belong on Início/Livros/Notas — replaces what used to be an app-bar
-/// "Mais" popup plus a separate gear icon, both easy to miss up in the
-/// corner. Conta lives here (not in SettingsScreen) so the gear-flavored
-/// "Configurações" stays purely about app preferences.
-class MenuScreen extends StatelessWidget {
-  const MenuScreen({super.key});
+/// The app's 4th tab: account + the tools and preferences that don't belong
+/// on Início/Livros/Notas — replaces what used to be an app-bar "Mais" popup
+/// plus a separate gear icon, both easy to miss up in the corner. Conta
+/// lives here (not in SettingsScreen) so the gear-flavored "Configurações"
+/// stays purely about app preferences. Named "Mais" (not "Menu") since the
+/// bottom nav itself is already the menu — this is just one item in it.
+class MoreScreen extends StatelessWidget {
+  const MoreScreen({super.key});
 
   Future<void> _signOut(BuildContext context) async {
     final confirmed = await showConfirmDialog(
@@ -50,19 +50,12 @@ class MenuScreen extends StatelessWidget {
               : null,
           onTap: auth.isSignedIn ? null : () => showAuthDialog(context),
         ),
-        const SectionHeader(title: 'Atalhos'),
+        const SectionHeader(title: 'Ferramentas'),
         ListTile(
           leading: const Icon(Icons.star_outline),
           title: const Text('Favoritos'),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(builder: (_) => const FavoritesScreen()),
-          ),
-        ),
-        ListTile(
-          leading: const Icon(Icons.help_outline),
-          title: const Text('Dúvidas pendentes'),
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const DoubtsScreen()),
           ),
         ),
         ListTile(

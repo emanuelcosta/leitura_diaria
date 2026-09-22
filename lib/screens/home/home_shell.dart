@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../menu/menu_screen.dart';
+import '../more/more_screen.dart';
 import '../notes/notes_screen.dart';
 import '../progress/book_progress_screen.dart';
 import 'home_screen.dart';
@@ -15,13 +15,13 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
 
-  static const _titles = ['Início', 'Livros', 'Notas', 'Menu'];
+  static const _titles = ['Início', 'Livros', 'Notas', 'Mais'];
 
   static const _tabs = [
     HomeScreen(),
     BookProgressScreen(),
     NotesScreen(),
-    MenuScreen(),
+    MoreScreen(),
   ];
 
   @override
@@ -36,7 +36,7 @@ class _HomeShellState extends State<HomeShell> {
           NavigationDestination(icon: Icon(Icons.home_outlined), selectedIcon: Icon(Icons.home), label: 'Início'),
           NavigationDestination(icon: Icon(Icons.menu_book_outlined), selectedIcon: Icon(Icons.menu_book), label: 'Livros'),
           NavigationDestination(icon: Icon(Icons.sticky_note_2_outlined), selectedIcon: Icon(Icons.sticky_note_2), label: 'Notas'),
-          NavigationDestination(icon: Icon(Icons.apps_outlined), selectedIcon: Icon(Icons.apps), label: 'Menu'),
+          NavigationDestination(icon: Icon(Icons.apps_outlined), selectedIcon: Icon(Icons.apps), label: 'Mais'),
         ],
       ),
     );

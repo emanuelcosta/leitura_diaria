@@ -22,8 +22,15 @@ class DoubtsSummaryCard extends StatelessWidget {
         ),
         subtitle: const Text('Versículos marcados como dúvida'),
         trailing: const Icon(Icons.chevron_right),
+        // DoubtsScreen has no Scaffold of its own (it's normally a tab inside
+        // NotesScreen) — wrap it here since this pushes it standalone.
         onTap: () => Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => const DoubtsScreen()),
+          MaterialPageRoute(
+            builder: (_) => Scaffold(
+              appBar: AppBar(title: const Text('Dúvidas pendentes')),
+              body: const DoubtsScreen(),
+            ),
+          ),
         ),
       ),
     );
