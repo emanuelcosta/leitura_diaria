@@ -8,6 +8,7 @@ import '../dictionary/dictionary_screen.dart';
 import '../favorites/favorites_screen.dart';
 import '../settings/settings_screen.dart';
 import 'widgets/auth_dialog.dart';
+import 'widgets/sync_now_tile.dart';
 
 /// The app's 4th tab: account + the tools and preferences that don't belong
 /// on Início/Livros/Notas — replaces what used to be an app-bar "Mais" popup
@@ -50,6 +51,7 @@ class MoreScreen extends StatelessWidget {
               : null,
           onTap: auth.isSignedIn ? null : () => showAuthDialog(context),
         ),
+        if (auth.isSignedIn) const SyncNowTile(),
         const SectionHeader(title: 'Ferramentas'),
         ListTile(
           leading: const Icon(Icons.star_outline),

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:provider/provider.dart';
 
 import '../../data/models/book.dart';
+import '../../data/models/favorite_color.dart';
 import '../../data/repositories/bible_text_repository.dart';
 import '../../logic/bible_reference_parser.dart';
 import '../../state/bookmark_provider.dart';
@@ -13,6 +14,7 @@ import '../../state/settings_provider.dart';
 import '../../state/verse_notes_provider.dart';
 import '../../widgets/book_mention_field.dart';
 import '../../widgets/reference_text.dart';
+import 'widgets/favorite_color_sheet.dart';
 
 /// Shared by every `ReferenceText` in the app (verse notes, doubt notes,
 /// chapter notes) — lives here rather than inside the widget itself so
@@ -393,6 +395,7 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
     FavoritesProvider favorites,
     VerseNotesProvider notes,
     DoubtsProvider doubts,
+    FavoriteColor favoriteColor,
   ) {
     final verseNumber = _selectedVerse!;
     final isFavorite = favorites.isFavorite(widget.bookId, widget.chapterNumber, verseNumber);
@@ -415,7 +418,10 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
       title: Text('${widget.bookName} ${widget.chapterNumber}:$verseNumber'),
       actions: [
         IconButton(
-          icon: Icon(isFavorite ? Icons.star : Icons.star_border),
+          icon: Icon(
+            isFavorite ? Icons.star : Icons.star_border,
+            color: isFavorite ? favoriteColor.color : null,
+          ),
           tooltip: isFavorite ? 'Remover dos favoritos' : 'Favoritar versículo',
           onPressed: () => favorites.toggle(widget.bookId, widget.chapterNumber, verseNumber),
         ),
@@ -464,6 +470,11 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
       title: Text('${widget.bookName} ${widget.chapterNumber}'),
       actions: [
         IconButton(
+          icon: Icon(Icons.palette_outlined, color: settings.favoriteColor.color),
+          tooltip: 'Cor dos favoritos',
+          onPressed: () => showFavoriteColorSheet(context),
+        ),
+        IconButton(
           icon: const Icon(Icons.text_decrease),
           tooltip: 'Diminuir fonte',
           onPressed: settings.fontScale <= minFontScale ? null : settings.decreaseFontScale,
@@ -507,7 +518,7 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
       appBar: _multiSelectMode
           ? _buildMultiSelectAppBar()
           : _selectedVerse != null
-              ? _buildSelectedVerseAppBar(favorites, notes, doubts)
+              ? _buildSelectedVerseAppBar(favorites, notes, doubts, settings.favoriteColor)
               : _buildDefaultAppBar(settings),
       body: verses == null
           ? const Center(child: CircularProgressIndicator())
@@ -575,12 +586,12 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
                 final isMultiSelected = _multiSelected.contains(verseNumber);
                 final isSelected = !_multiSelectMode && _selectedVerse == verseNumber;
                 // Priority when not actively selected: selection (blue) >
-                // dúvida (purple) > favorito (amber) > none. A verse can be
+                // dúvida (purple) > favorito (user-chosen color) > none. A verse can be
                 // both favorited and doubted; the purple tint wins so
                 // pending-research verses stay easy to spot while reading.
                 Color? highlight() {
                   if (isDoubt) return Colors.deepPurple.withValues(alpha: 0.12);
-                  if (isFavorite) return Colors.amber.withValues(alpha: 0.15);
+                  if (isFavorite) return settings.favoriteColor.highlight;
                   return null;
                 }
 

@@ -7,17 +7,21 @@ import '../data/database/app_database.dart';
 import '../data/database/queries.dart';
 import '../data/database/seed_loader.dart';
 import '../data/reading_plan_meta.dart';
+import '../data/repositories/bible_text_repository.dart';
 import '../data/repositories/book_repository.dart';
 import '../data/repositories/chapter_repository.dart';
 import '../data/repositories/settings_repository.dart';
 import '../data/repositories/sync_repository.dart';
+import '../logic/chapter_progress_merge.dart';
 import '../logic/schedule_calculator.dart';
 import '../logic/streak_calculator.dart';
+import '../logic/verse_progress.dart';
 
 class ReadingPlanProvider extends ChangeNotifier {
   final ChapterRepository _chapterRepo;
   final BookRepository _bookRepo;
   final SettingsRepository _settingsRepo;
+  final BibleTextRepository _bibleTextRepo;
   final SyncRepository? _syncRepo;
   StreamSubscription<AuthState>? _authSub;
 
@@ -25,10 +29,12 @@ class ReadingPlanProvider extends ChangeNotifier {
     ChapterRepository? chapterRepo,
     BookRepository? bookRepo,
     SettingsRepository? settingsRepo,
+    BibleTextRepository? bibleTextRepo,
     SyncRepository? syncRepo,
   })  : _chapterRepo = chapterRepo ?? ChapterRepository(),
         _bookRepo = bookRepo ?? BookRepository(),
         _settingsRepo = settingsRepo ?? SettingsRepository(),
+        _bibleTextRepo = bibleTextRepo ?? BibleTextRepository(),
         _syncRepo = syncRepo {
     // Only listens when a SyncRepository was supplied (i.e. Supabase was
     // initialized) — tests and offline builds pass none and skip this.
@@ -151,21 +157,33 @@ class ReadingPlanProvider extends ChangeNotifier {
     unawaited(_chapterRepo.getAllChapters().then(syncRepo.pushAll).catchError((_) {}));
   }
 
-  /// Called on sign-in: if the account already has remote progress, it wins
-  /// and overwrites local state (e.g. logging into an existing account on a
-  /// new device); otherwise this is treated as the account's first sync and
-  /// the local state is pushed up instead.
+  /// Called on sign-in: merges remote progress into local (a chapter read on
+  /// any device stays read — see [mergeChapterProgress]) and pushes the merged
+  /// result back, so both this device and the account end up with the union.
+  /// Local reads made before signing in are never overwritten.
   Future<void> pullFromRemoteAndMerge() async {
     final syncRepo = _syncRepo;
     if (syncRepo == null) return;
     final remote = await syncRepo.pullAll();
-    if (remote.isEmpty) {
-      await syncRepo.pushAll(await _chapterRepo.getAllChapters());
-    } else {
-      await _chapterRepo.applyRemoteState(remote);
-    }
+    final merged = mergeChapterProgress(await _chapterRepo.getAllChapters(), remote);
+    await _chapterRepo.applyRemoteState(merged.map((c) => (
+          bookId: c.bookId,
+          chapterNumber: c.chapterNumber,
+          isRead: c.isRead,
+          readAt: c.readAt,
+          note: c.note,
+        )));
+    await syncRepo.pushAll(merged);
     await refreshOverallProgress();
     notifyListeners();
+  }
+
+  /// Same shape as [overallProgress], but counting verses of the read
+  /// chapters instead of chapters (see ProgressMode.verses).
+  Future<OverallProgress> getVerseProgress(BibleTranslation translation) async {
+    final counts = await _bibleTextRepo.getVerseCounts(translation);
+    final result = computeVerseProgress(counts, await _chapterRepo.getReadChapterRefs());
+    return OverallProgress(readCount: result.read, totalCount: result.total);
   }
 
   Future<StreakResult> computeStreak() async {

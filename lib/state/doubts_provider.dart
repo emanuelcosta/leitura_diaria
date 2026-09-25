@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/models/doubt_verse.dart';
 import '../data/repositories/doubt_sync_repository.dart';
 import '../data/repositories/doubt_verse_repository.dart';
+import '../logic/sync_merge.dart';
 
 /// Mirrors FavoritesProvider's pattern for the "tenho dúvida" highlight,
 /// plus an optional note per doubt (what the user was thinking).
@@ -96,12 +97,9 @@ class DoubtsProvider extends ChangeNotifier {
   Future<void> pullFromRemoteAndMerge() async {
     final syncRepo = _syncRepo;
     if (syncRepo == null) return;
-    final remote = await syncRepo.pullAll();
-    if (remote.isEmpty) {
-      await syncRepo.pushAll(await _repo.getAll());
-    } else {
-      await _repo.replaceAll(remote);
-    }
+    final merged = mergeDoubts(await _repo.getAll(), await syncRepo.pullAll());
+    await _repo.replaceAll(merged);
+    await syncRepo.pushAll(merged);
     await load();
   }
 

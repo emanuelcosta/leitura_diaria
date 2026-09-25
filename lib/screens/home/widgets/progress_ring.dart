@@ -4,12 +4,14 @@ class ProgressRing extends StatelessWidget {
   final double fraction; // 0..1
   final int readCount;
   final int totalCount;
+  final String unit; // e.g. "capítulos", "versículos"
 
   const ProgressRing({
     super.key,
     required this.fraction,
     required this.readCount,
     required this.totalCount,
+    this.unit = 'capítulos',
   });
 
   @override
@@ -35,7 +37,7 @@ class ProgressRing extends StatelessWidget {
             children: [
               Text('$percent%', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
               const SizedBox(height: 4),
-              Text('$readCount / $totalCount capítulos', style: Theme.of(context).textTheme.bodySmall),
+              Text('$readCount / $totalCount $unit', style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
         ],

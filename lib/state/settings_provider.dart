@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show ThemeMode;
 
+import '../data/models/favorite_color.dart';
+import '../data/models/progress_mode.dart';
 import '../data/repositories/bible_text_repository.dart';
 import '../data/repositories/settings_repository.dart';
 import '../services/translation_service.dart';
@@ -25,6 +27,8 @@ class SettingsProvider extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
   double _fontScale = 1.0;
   TranslationLanguage _translationLanguage = TranslationLanguage.pt;
+  ProgressMode _progressMode = ProgressMode.chapters;
+  FavoriteColor _favoriteColor = FavoriteColor.amber;
   bool _loaded = false;
 
   DateTime? get startDate => _startDate;
@@ -35,6 +39,8 @@ class SettingsProvider extends ChangeNotifier {
   ThemeMode get themeMode => _themeMode;
   double get fontScale => _fontScale;
   TranslationLanguage get translationLanguage => _translationLanguage;
+  ProgressMode get progressMode => _progressMode;
+  FavoriteColor get favoriteColor => _favoriteColor;
   bool get loaded => _loaded;
   bool get hasStarted => _startDate != null;
 
@@ -48,6 +54,8 @@ class SettingsProvider extends ChangeNotifier {
     _themeMode = await _repo.getThemeMode();
     _fontScale = await _repo.getFontScale();
     _translationLanguage = await _repo.getTranslationLanguage();
+    _progressMode = await _repo.getProgressMode();
+    _favoriteColor = await _repo.getFavoriteColor();
     _loaded = true;
     notifyListeners();
   }
@@ -55,6 +63,18 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setTranslationLanguage(TranslationLanguage language) async {
     await _repo.setTranslationLanguage(language);
     _translationLanguage = language;
+    notifyListeners();
+  }
+
+  Future<void> setFavoriteColor(FavoriteColor color) async {
+    await _repo.setFavoriteColor(color);
+    _favoriteColor = color;
+    notifyListeners();
+  }
+
+  Future<void> setProgressMode(ProgressMode mode) async {
+    await _repo.setProgressMode(mode);
+    _progressMode = mode;
     notifyListeners();
   }
 

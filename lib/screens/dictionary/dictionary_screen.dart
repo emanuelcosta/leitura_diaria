@@ -49,7 +49,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                 TextField(
                   controller: _queryController,
                   decoration: const InputDecoration(
-                    hintText: 'Buscar termo (em inglês, ex: covenant)',
+                    hintText: 'Buscar termo (ex: aliança, Arão, covenant)',
                     prefixIcon: Icon(Icons.search),
                     isDense: true,
                     border: OutlineInputBorder(),
@@ -58,8 +58,8 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Conteúdo em inglês (Easton\'s/Smith\'s, domínio público). '
-                  'Toque em "Traduzir" em cada definição pra ver em ${translationLanguage.label}.',
+                  'Termos em português ou inglês; definições em inglês (Easton\'s/Smith\'s, '
+                  'domínio público). Toque em "Traduzir" em cada definição pra ver em ${translationLanguage.label}.',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                         color: Theme.of(context).colorScheme.outline,
                       ),
@@ -72,7 +72,7 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
             child: _queryController.text.trim().isEmpty
                 ? const EmptyState(
                     icon: Icons.menu_book_outlined,
-                    message: 'Digite um termo bíblico em inglês pra ver a definição.',
+                    message: 'Digite um termo bíblico pra ver a definição.',
                   )
                 : _results.isEmpty
                     ? const EmptyState(
@@ -85,7 +85,10 @@ class _DictionaryScreenState extends State<DictionaryScreen> {
                         itemBuilder: (context, i) {
                           final entry = _results[i];
                           return ExpansionTile(
-                            title: Text(entry.term, style: const TextStyle(fontWeight: FontWeight.w600)),
+                            title: Text(entry.displayTerm, style: const TextStyle(fontWeight: FontWeight.w600)),
+                            // Keep the English headword visible: definitions
+                            // are in English and refer to it by that name.
+                            subtitle: entry.termPt != null ? Text(entry.term) : null,
                             childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
                             expandedCrossAxisAlignment: CrossAxisAlignment.start,
                             children: [

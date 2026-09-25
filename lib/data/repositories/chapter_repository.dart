@@ -106,6 +106,22 @@ class ChapterRepository {
     );
   }
 
+  /// (book order, chapter number) of every read chapter — the book's
+  /// canonical order is what indexes the Bible text / verse counts.
+  Future<List<({int bookOrder, int chapterNumber})>> getReadChapterRefs() async {
+    final db = await AppDatabase.instance.database;
+    final rows = await db.rawQuery('''
+      SELECT books.book_order as book_order, chapters.chapter_number as chapter_number
+      FROM chapters
+      JOIN books ON books.id = chapters.book_id
+      WHERE chapters.is_read = 1
+    ''');
+    return [
+      for (final r in rows)
+        (bookOrder: r['book_order'] as int, chapterNumber: r['chapter_number'] as int),
+    ];
+  }
+
   /// Distinct calendar dates (yyyy-MM-dd) on which at least one chapter was read.
   Future<List<DateTime>> getAllDistinctReadDates() async {
     final db = await AppDatabase.instance.database;

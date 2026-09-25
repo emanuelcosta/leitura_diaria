@@ -38,10 +38,26 @@ class SyncRepository {
     await _client.from('chapter_progress').upsert(rows);
   }
 
+  /// PostgREST caps each response (1000 rows by default on Supabase) and the
+  /// Bible has 1189 chapters — every chapter is pushed, read or not — so this
+  /// pages through with a stable order until a short page comes back.
+  static const _pageSize = 1000;
+
   Future<List<RemoteChapterProgress>> pullAll() async {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) return [];
-    final rows = await _client.from('chapter_progress').select().eq('user_id', userId);
+    final rows = <Map<String, dynamic>>[];
+    for (var from = 0;; from += _pageSize) {
+      final page = await _client
+          .from('chapter_progress')
+          .select()
+          .eq('user_id', userId)
+          .order('book_id')
+          .order('chapter_number')
+          .range(from, from + _pageSize - 1);
+      rows.addAll(page);
+      if (page.length < _pageSize) break;
+    }
     return rows
         .map((r) => (
               bookId: r['book_id'] as String,

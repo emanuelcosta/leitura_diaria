@@ -102,6 +102,16 @@ void main() {
     expect(dates.length, 1); // both marked "now" -> same day
   });
 
+  test('getReadChapterRefs returns book order + chapter of read chapters only', () async {
+    await chapterRepo.setRead('genesis-2', isRead: true);
+    await chapterRepo.setRead('salmos-1', isRead: true);
+    final refs = await chapterRepo.getReadChapterRefs();
+    expect(refs.toSet(), {
+      (bookOrder: 1, chapterNumber: 2),
+      (bookOrder: 19, chapterNumber: 1),
+    });
+  });
+
   test('resetAllProgress clears state without deleting rows', () async {
     await chapterRepo.setRead('genesis-1', isRead: true, note: 'nota');
     await chapterRepo.resetAllProgress();

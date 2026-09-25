@@ -2,6 +2,8 @@ import 'package:flutter/material.dart' show ThemeMode;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../services/translation_service.dart';
+import '../models/favorite_color.dart';
+import '../models/progress_mode.dart';
 import 'bible_text_repository.dart';
 
 class SettingsRepository {
@@ -14,6 +16,8 @@ class SettingsRepository {
   static const _keyThemeMode = 'theme_mode';
   static const _keyFontScale = 'font_scale';
   static const _keyTranslationLanguage = 'translation_language';
+  static const _keyProgressMode = 'progress_mode';
+  static const _keyFavoriteColor = 'favorite_color';
 
   Future<DateTime?> getStartDate() async {
     final prefs = await SharedPreferences.getInstance();
@@ -112,5 +116,27 @@ class SettingsRepository {
   Future<void> setTranslationLanguage(TranslationLanguage language) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyTranslationLanguage, language.code);
+  }
+
+  Future<ProgressMode> getProgressMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    final name = prefs.getString(_keyProgressMode);
+    return ProgressMode.values.firstWhere((m) => m.name == name, orElse: () => ProgressMode.chapters);
+  }
+
+  Future<void> setProgressMode(ProgressMode mode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyProgressMode, mode.name);
+  }
+
+  Future<FavoriteColor> getFavoriteColor() async {
+    final prefs = await SharedPreferences.getInstance();
+    final name = prefs.getString(_keyFavoriteColor);
+    return FavoriteColor.values.firstWhere((c) => c.name == name, orElse: () => FavoriteColor.amber);
+  }
+
+  Future<void> setFavoriteColor(FavoriteColor color) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyFavoriteColor, color.name);
   }
 }

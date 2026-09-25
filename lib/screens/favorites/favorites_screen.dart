@@ -23,7 +23,8 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
   @override
   Widget build(BuildContext context) {
     final favorites = context.watch<FavoritesProvider>();
-    final translation = context.watch<SettingsProvider>().translation;
+    final settings = context.watch<SettingsProvider>();
+    final translation = settings.translation;
     return Scaffold(
       appBar: AppBar(title: const Text('Favoritos')),
       body: FutureBuilder(
@@ -63,7 +64,7 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
                   },
                 ),
                 trailing: IconButton(
-                  icon: Icon(Icons.star, color: Colors.amber[700]),
+                  icon: Icon(Icons.star, color: settings.favoriteColor.color),
                   tooltip: 'Remover dos favoritos',
                   onPressed: () => favorites.toggle(favorite.bookId, favorite.chapterNumber, favorite.verseNumber),
                 ),

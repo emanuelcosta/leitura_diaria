@@ -15,7 +15,7 @@ import '../heatmap/widgets/heatmap_grid.dart';
 import 'widgets/continue_reading_card.dart';
 import 'widgets/day_navigator.dart';
 import 'widgets/doubts_summary_card.dart';
-import 'widgets/progress_ring.dart';
+import 'widgets/progress_section.dart';
 import 'widgets/schedule_status_card.dart';
 import 'widgets/streak_badge.dart';
 
@@ -95,13 +95,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const Divider(height: 33),
             const SectionHeader(title: 'Seu progresso'),
             const SizedBox(height: 16),
-            Center(
-              child: ProgressRing(
-                fraction: progress.fraction,
-                readCount: progress.readCount,
-                totalCount: progress.totalCount,
-              ),
-            ),
+            ProgressSection(chapterProgress: progress),
             const SizedBox(height: 24),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),

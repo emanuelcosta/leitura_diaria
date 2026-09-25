@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/models/verse_note.dart';
 import '../data/repositories/verse_note_repository.dart';
 import '../data/repositories/verse_note_sync_repository.dart';
+import '../logic/sync_merge.dart';
 
 class VerseNotesProvider extends ChangeNotifier {
   final VerseNoteRepository _repo;
@@ -71,12 +72,9 @@ class VerseNotesProvider extends ChangeNotifier {
   Future<void> pullFromRemoteAndMerge() async {
     final syncRepo = _syncRepo;
     if (syncRepo == null) return;
-    final remote = await syncRepo.pullAll();
-    if (remote.isEmpty) {
-      await syncRepo.pushAll(await _repo.getAll());
-    } else {
-      await _repo.replaceAll(remote);
-    }
+    final merged = mergeVerseNotes(await _repo.getAll(), await syncRepo.pullAll());
+    await _repo.replaceAll(merged);
+    await syncRepo.pushAll(merged);
     await load();
   }
 

@@ -46,6 +46,19 @@ class BibleTextRepository {
     return (chapters[chapterNumber - 1] as List<dynamic>).cast<String>();
   }
 
+  /// Verse count per chapter: `counts[bookOrder - 1][chapterNumber - 1]`.
+  /// Counts differ slightly between translations (ACF 31102, ARC 31105).
+  Future<List<List<int>>> getVerseCounts(BibleTranslation translation) async {
+    final books = await _books(translation);
+    return [
+      for (final book in books)
+        [
+          for (final chapter in (book as Map<String, dynamic>)['chapters'] as List<dynamic>)
+            (chapter as List<dynamic>).length,
+        ],
+    ];
+  }
+
   /// Full-text search across every verse of [candidateBooks] (already
   /// filtered by testament/category by the caller). [matches] receives each
   /// verse's normalized text (see normalizeForSearch) and decides whether it
