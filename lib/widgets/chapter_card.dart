@@ -121,7 +121,7 @@ class _ChapterCardState extends State<ChapterCard> {
                             child: ReferenceText(
                               text: chapter.note!,
                               books: books,
-                              onReferenceTap: openBibleReference,
+                              onReferenceTap: previewBibleReference,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: Theme.of(context).textTheme.bodySmall,

@@ -90,7 +90,7 @@ provider. Repita esse formato para qualquer novo dado do usuário.
   linhas, ou (c) tem estado próprio que não faz sentido no widget pai.
 - Nomeie pelo papel, não pelo conteúdo: `*Screen` (tela cheia, tem
   `Scaffold`), `*Card`/`*Tile` (item de lista), `*Section` (agrupador),
-  `*Panel` (bloco reusável sem `Scaffold` próprio, ex: `VerseSearchPanel`),
+  `*Panel` (bloco reusável sem `Scaffold` próprio),
   `*Dialog` (modal). Veja `lib/screens/progress/widgets/` como referência.
 - Um widget não busca dado que a tela já tem — recebe por parâmetro
   (`BookProgressTile(progress: b)`, não `BookProgressTile(bookId: id)`
@@ -112,7 +112,10 @@ provider. Repita esse formato para qualquer novo dado do usuário.
   proposital.
 - Busca de texto (nomes de livro, versículos) sempre ignora acento —
   `normalizeForSearch` em `lib/logic/text_normalize.dart`, não reimplemente.
-- Um painel que pode crescer bastante (busca de versículos, listas longas)
+- Busca de versículos é a aba **Buscar** (`lib/screens/search/`): regras de
+  correspondência em `VerseQuery` (`lib/logic/verse_query.dart`), estado em
+  `VerseSearchProvider`. Não crie outra busca de texto — estenda essa.
+- Um painel que pode crescer bastante (filtros da busca, listas longas)
   abre como modal (`showModalBottomSheet`), nunca empurra o conteúdo
   principal pra baixo.
 

@@ -68,9 +68,9 @@ void main() {
     expect(findBibleReferences('Só um comentário qualquer, sem nada.', books), isEmpty);
   });
 
-  group('parseDirectReference (quick-jump search, no "@")', () {
+  group('parseSearchReference: sigla forms and edge cases', () {
     test('parses a bare "Sigla cap.vers" query', () {
-      final ref = parseDirectReference('1Pe 5.15', books);
+      final ref = parseSearchReference('1Pe 5.15', books);
       expect(ref, isNotNull);
       expect(ref!.book.id, '1pedro');
       expect(ref.chapterNumber, 5);
@@ -78,13 +78,13 @@ void main() {
     });
 
     test('accepts ":" as separator and trims surrounding whitespace', () {
-      final ref = parseDirectReference('  1Pe 5:15  ', books);
+      final ref = parseSearchReference('  1Pe 5:15  ', books);
       expect(ref, isNotNull);
       expect(ref!.verseNumber, 15);
     });
 
     test('accepts a plain space as the chapter/verse separator (no keyboard switch needed)', () {
-      final ref = parseDirectReference('1Pe 5 15', books);
+      final ref = parseSearchReference('1Pe 5 15', books);
       expect(ref, isNotNull);
       expect(ref!.book.id, '1pedro');
       expect(ref.chapterNumber, 5);
@@ -92,46 +92,29 @@ void main() {
     });
 
     test('collapses extra spaces around the separator', () {
-      final ref = parseDirectReference('1Pe 5   15', books);
+      final ref = parseSearchReference('1Pe 5   15', books);
       expect(ref, isNotNull);
       expect(ref!.verseNumber, 15);
     });
 
     test('chapter-only query resolves with a null verseNumber', () {
-      final ref = parseDirectReference('Sl 23', books);
+      final ref = parseSearchReference('Sl 23', books);
       expect(ref, isNotNull);
       expect(ref!.book.id, 'salmos');
       expect(ref.verseNumber, isNull);
     });
 
     test('a plain book-name query (not a reference) returns null, falls through to name search', () {
-      expect(parseDirectReference('Gênesis', books), isNull);
-      expect(parseDirectReference('', books), isNull);
+      expect(parseSearchReference('Gênesis', books), isNull);
+      expect(parseSearchReference('', books), isNull);
     });
 
     test('trailing junk after the reference makes it not match (whole-string anchor)', () {
-      expect(parseDirectReference('1Pe 5.15 e mais', books), isNull);
+      expect(parseSearchReference('1Pe 5.15 e mais', books), isNull);
     });
 
     test('out-of-range chapter returns null', () {
-      expect(parseDirectReference('Sl 999', books), isNull);
-    });
-  });
-
-  group('looksLikePartialSigla', () {
-    test('accepts a leading-digit-plus-letters partial with no chapter yet', () {
-      expect(looksLikePartialSigla('1P'), isTrue);
-      expect(looksLikePartialSigla('1Pedro'), isTrue);
-      expect(looksLikePartialSigla('Jo'), isTrue);
-    });
-
-    test('rejects once a chapter number has started (space + digit)', () {
-      expect(looksLikePartialSigla('1Pe 5'), isFalse);
-    });
-
-    test('rejects empty text', () {
-      expect(looksLikePartialSigla(''), isFalse);
-      expect(looksLikePartialSigla('   '), isFalse);
+      expect(parseSearchReference('Sl 999', books), isNull);
     });
   });
 
@@ -167,6 +150,37 @@ void main() {
 
     test('unmatched partial yields no suggestions', () {
       expect(suggestBooksForPartialSigla('xyz', books), isEmpty);
+    });
+  });
+
+  group('parseSearchReference (Buscar tab: names or siglas)', () {
+    test('full book name, accent-insensitive, space separators', () {
+      final ref = parseSearchReference('joao 3 16', books)!;
+      expect(ref.book.id, 'joao');
+      expect(ref.chapterNumber, 3);
+      expect(ref.verseNumber, 16);
+    });
+
+    test('sigla still works', () {
+      expect(parseSearchReference('1Pe 5:7', books)!.book.id, '1pedro');
+    });
+
+    test('digit or roman numeral, spaced or not', () {
+      for (final q in ['1 pedro 5 7', '1pedro 5.7', 'I Pedro 5:7', 'i pedro 5 7']) {
+        expect(parseSearchReference(q, books)?.book.id, '1pedro', reason: q);
+      }
+    });
+
+    test('unambiguous name prefix of 3+ letters', () {
+      expect(parseSearchReference('gen 1', books)!.book.id, 'genesis');
+      expect(parseSearchReference('salm 23', books)!.verseNumber, isNull);
+    });
+
+    test('plain words, missing chapter, or out-of-range chapter -> null', () {
+      expect(parseSearchReference('amor de deus', books), isNull);
+      expect(parseSearchReference('joao', books), isNull);
+      expect(parseSearchReference('joao 99', books), isNull);
+      expect(parseSearchReference('joao 3 0', books), isNull);
     });
   });
 }

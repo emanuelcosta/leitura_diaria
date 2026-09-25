@@ -58,7 +58,7 @@ class NoteTile extends StatelessWidget {
       subtitle: ReferenceText(
         text: view.chapter.note ?? '',
         books: books,
-        onReferenceTap: openBibleReference,
+        onReferenceTap: previewBibleReference,
       ),
       trailing: readAt != null ? Text(DateFormat('dd/MM/yy').format(readAt)) : null,
       onTap: () => _edit(context),

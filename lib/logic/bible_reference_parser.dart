@@ -34,13 +34,9 @@ const _chapterVersePattern = r'(\d+)(?:[.:\s]+(\d+))?';
 /// findBibleReferences.
 final _embeddedReferencePattern = RegExp('@($_siglaPattern)\\s*$_chapterVersePattern');
 
-/// `Sigla cap.vers` matching the *whole* trimmed input, no "@" — see
-/// parseDirectReference (the Livros tab's quick-jump search).
-final _directReferencePattern = RegExp('^($_siglaPattern)\\s*$_chapterVersePattern\$');
-
-/// Case/accent-insensitive lookup by abbreviation only (not full book name —
-/// a direct search query like "1Pe" is terse by design; full names are
-/// already covered by the Livros tab's plain name filter).
+/// Case/accent-insensitive lookup by abbreviation only — `@` references in
+/// notes are written with siglas. (The Buscar tab also accepts full names:
+/// see parseSearchReference.)
 Book? _resolveBookBySigla(String sigla, List<Book> books) {
   final normalized = normalizeForSearch(sigla);
   for (final book in books) {
@@ -78,26 +74,6 @@ List<BibleReference> findBibleReferences(String text, List<Book> books) {
   return results;
 }
 
-/// For a search box where the *entire* query is meant to be a reference,
-/// e.g. typing "1Pe 5:15" or "1Pe 5.15" (no "@") to jump straight there —
-/// returns null for anything that isn't exactly `Sigla capítulo[.:versículo]`
-/// end to end, so a plain book-name search still falls through to the
-/// normal filter instead of being swallowed here.
-BibleReference? parseDirectReference(String query, List<Book> books) {
-  final trimmed = query.trim();
-  if (trimmed.isEmpty) return null;
-  final match = _directReferencePattern.firstMatch(trimmed);
-  if (match == null) return null;
-  return _toReference(match, books);
-}
-
-/// A reference still being typed, e.g. "1P" or "1Pedro" — an optional
-/// leading digit then letters only, no chapter number yet. Drives
-/// autocomplete: once a space + digit shows up the user has moved on to the
-/// chapter, so this stops matching and any suggestion list should close.
-final _partialSiglaPattern = RegExp(r'^\d?[A-Za-zÀ-ÖØ-öø-ÿ]+$');
-
-bool looksLikePartialSigla(String text) => _partialSiglaPattern.hasMatch(text.trim());
 
 /// Bible book names spell ordinal prefixes as Roman numerals ("I Pedro",
 /// "II Samuel"), but the abbreviation next to them uses the digit ("1Pe",
@@ -120,8 +96,8 @@ Iterable<String> _nameSearchVariants(String normalizedName) sync* {
 
 /// Book suggestions for autocomplete while [partial] is being typed as
 /// either an abbreviation ("1Pe") or the start of the book's full name
-/// ("1Pedro", "i pedro") — both are valid, matching how books are already
-/// searched elsewhere (Livros tab name/abbreviation filter). Matching is
+/// ("1Pedro", "i pedro") — both are valid (used by the "@" book mention
+/// field in notes). Matching is
 /// case/accent-insensitive via normalizeForSearch, same as the rest of the
 /// app. Abbreviation-prefix matches rank first since that's the terser,
 /// more likely intent when typing a reference.
@@ -138,4 +114,59 @@ List<Book> suggestBooksForPartialSigla(String partial, List<Book> books, {int li
     }
   }
   return [...byAbbreviation, ...byName].take(limit).toList();
+}
+
+/// Book part (letters/spaces, optional leading digit — "1 pedro", "I Pedro",
+/// "joão") then chapter and optional verse, matching the whole input.
+final _flexibleReferencePattern =
+    RegExp(r'^(\d?\s*[A-Za-zÀ-ÖØ-öø-ÿ][A-Za-zÀ-ÖØ-öø-ÿ\s]*?)\s*(\d+)(?:[.:\s]+(\d+))?$');
+
+/// Resolves what a person types for a book in a search box: the sigla
+/// ("Jo", "1Pe"), the full name with digit or roman numeral, spaced or not
+/// ("1 pedro", "i pedro", "1pedro"), or an unambiguous start of the name
+/// ("gen", "apoc"). Spaces and accents are ignored throughout.
+Book? _resolveBookLoosely(String typed, List<Book> books) {
+  final key = normalizeForSearch(typed).replaceAll(RegExp(r'\s+'), '');
+  if (key.isEmpty) return null;
+  String squash(String s) => s.replaceAll(' ', '');
+
+  for (final book in books) {
+    if (normalizeForSearch(book.abbreviation) == key) return book;
+  }
+  for (final book in books) {
+    if (_nameSearchVariants(normalizeForSearch(book.name)).any((v) => squash(v) == key)) return book;
+  }
+  // Prefix only when it's long enough to mean something and points at a
+  // single book ("jo" is already the sigla for João; "jos" could only be
+  // Josué).
+  if (key.length < 3) return null;
+  final prefixMatches = books
+      .where((b) => _nameSearchVariants(normalizeForSearch(b.name)).any((v) => squash(v).startsWith(key)))
+      .toList();
+  return prefixMatches.length == 1 ? prefixMatches.single : null;
+}
+
+/// The Buscar tab's reference detection: the *whole* input must be a
+/// reference, with the book as a sigla ("1Pe 5 15") or a full/partial name
+/// ("joão 3 16", "1 pedro 5:15", "salmos 23", "gen 1") — what most people
+/// type. Null when the input isn't entirely a reference, so the caller
+/// falls back to a text search.
+BibleReference? parseSearchReference(String query, List<Book> books) {
+  final trimmed = query.trim();
+  final match = _flexibleReferencePattern.firstMatch(trimmed);
+  if (match == null) return null;
+  final book = _resolveBookLoosely(match.group(1)!, books);
+  final chapter = int.parse(match.group(2)!);
+  if (book == null || chapter < 1 || chapter > book.chapterCount) return null;
+  final verseText = match.group(3);
+  final verse = verseText != null ? int.parse(verseText) : null;
+  if (verse != null && verse < 1) return null;
+  return BibleReference(
+    matchedText: trimmed,
+    start: 0,
+    end: trimmed.length,
+    book: book,
+    chapterNumber: chapter,
+    verseNumber: verse,
+  );
 }

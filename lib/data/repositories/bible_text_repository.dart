@@ -24,6 +24,31 @@ enum BibleTranslation {
 class BibleTextRepository {
   static final Map<BibleTranslation, List<dynamic>> _cache = {};
 
+  /// Every verse already run through normalizeForSearch, same shape as the
+  /// JSON (`[book][chapter][verse]`). Built once per translation: the
+  /// Buscar tab searches as you type, and re-normalizing ~31k verses on
+  /// every keystroke was the bulk of each search's cost.
+  static final Map<BibleTranslation, List<List<List<String>>>> _normalizedCache = {};
+
+  Future<List<List<List<String>>>> _normalized(BibleTranslation translation) async {
+    final cached = _normalizedCache[translation];
+    if (cached != null) return cached;
+    final books = await _books(translation);
+    final normalized = [
+      for (final book in books)
+        [
+          for (final chapter in (book as Map<String, dynamic>)['chapters'] as List<dynamic>)
+            [for (final verse in chapter as List<dynamic>) normalizeForSearch(verse as String)],
+        ],
+    ];
+    _normalizedCache[translation] = normalized;
+    return normalized;
+  }
+
+  /// Builds the search index ahead of time (e.g. when the Buscar tab opens)
+  /// so the first search doesn't pay for it.
+  Future<void> warmUpSearch(BibleTranslation translation) => _normalized(translation);
+
   Future<List<dynamic>> _books(BibleTranslation translation) async {
     final cached = _cache[translation];
     if (cached != null) return cached;
@@ -63,20 +88,22 @@ class BibleTextRepository {
   /// filtered by testament/category by the caller). [matches] receives each
   /// verse's normalized text (see normalizeForSearch) and decides whether it
   /// counts as a hit — the word/AND-OR condition logic lives in the caller
-  /// (see VerseSearchPanel), this just does the scan.
+  /// (see VerseQuery / VerseSearchProvider), this just does the scan.
   Future<List<VerseSearchResult>> search({
     required BibleTranslation translation,
     required List<Book> candidateBooks,
     required bool Function(String normalizedVerseText) matches,
   }) async {
     final allBooks = await _books(translation);
+    final allNormalized = await _normalized(translation);
     final results = <VerseSearchResult>[];
     for (final book in candidateBooks) {
       final chapters = (allBooks[book.order - 1] as Map<String, dynamic>)['chapters'] as List<dynamic>;
+      final normalizedChapters = allNormalized[book.order - 1];
       for (var c = 0; c < chapters.length; c++) {
         final verses = (chapters[c] as List<dynamic>).cast<String>();
         for (var v = 0; v < verses.length; v++) {
-          final normalized = normalizeForSearch(verses[v]);
+          final normalized = normalizedChapters[c][v];
           if (matches(normalized)) {
             results.add(VerseSearchResult(
               bookId: book.id,

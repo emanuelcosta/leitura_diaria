@@ -55,7 +55,7 @@ class _VerseNotesScreenState extends State<VerseNotesScreen> {
               subtitle: ReferenceText(
                 text: note.note,
                 books: allBooks,
-                onReferenceTap: openBibleReference,
+                onReferenceTap: previewBibleReference,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),

@@ -77,7 +77,7 @@ class _DoubtsScreenState extends State<DoubtsScreen> {
                       child: ReferenceText(
                         text: doubt.note!,
                         books: allBooks,
-                        onReferenceTap: openBibleReference,
+                        onReferenceTap: previewBibleReference,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.deepPurple),

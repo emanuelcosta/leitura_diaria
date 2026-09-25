@@ -14,11 +14,27 @@ import '../../state/settings_provider.dart';
 import '../../state/verse_notes_provider.dart';
 import '../../widgets/book_mention_field.dart';
 import '../../widgets/reference_text.dart';
+import 'widgets/bible_reference_sheet.dart';
 import 'widgets/favorite_color_sheet.dart';
+import 'widgets/passage_picker_sheet.dart';
 
 /// Shared by every `ReferenceText` in the app (verse notes, doubt notes,
 /// chapter notes) — lives here rather than inside the widget itself so
 /// lib/widgets/ stays screen-agnostic (see ReferenceText's doc comment).
+/// Shows the verse in a bottom sheet over the current screen; its "Ver texto
+/// completo" button then opens the chapter via [openBibleReference].
+void previewBibleReference(BuildContext context, BibleReference reference) {
+  showBibleReferenceSheet(
+    context,
+    reference,
+    onOpenFullText: () => openBibleReference(context, reference),
+  );
+}
+
+/// Opens the chapter with the referenced verse selected and scrolled into
+/// view. Used directly where the user explicitly asked to jump (a reference
+/// typed in the Buscar tab), and by [previewBibleReference]'s full-text
+/// button.
 void openBibleReference(BuildContext context, BibleReference reference) {
   Navigator.of(context).push(
     MaterialPageRoute(
@@ -87,8 +103,8 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
   void initState() {
     super.initState();
     _translation = context.read<SettingsProvider>().translation;
-    // Provisional — a reference (from a note, or the Livros quick-jump
-    // search) only validates its chapter against Book.chapterCount, since
+    // Provisional — a reference (from a note, or typed in the Buscar tab)
+    // only validates its chapter against Book.chapterCount, since
     // per-chapter verse counts aren't known without the chapter text itself
     // loading (async). _loadVerses() below re-validates once that arrives
     // and clears this if the verse turns out not to exist.
@@ -465,9 +481,43 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
     );
   }
 
-  PreferredSizeWidget _buildDefaultAppBar(SettingsProvider settings) {
+  /// Tapping the "João 3" title opens the passage picker at this book's
+  /// chapter step; the chosen passage replaces this screen (not stacked on
+  /// top), so Back still returns to wherever reading started.
+  Future<void> _pickPassage(List<Book> books) async {
+    final current = books.where((b) => b.id == widget.bookId).firstOrNull;
+    final selection = await showPassagePicker(context, initialBook: current);
+    if (selection == null || !mounted) return;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => ChapterReadingScreen(
+          bookId: selection.book.id,
+          bookOrder: selection.book.order,
+          bookName: selection.book.name,
+          chapterNumber: selection.chapterNumber,
+          initialVerseNumber: selection.verseNumber,
+        ),
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildDefaultAppBar(SettingsProvider settings, List<Book> books) {
     return AppBar(
-      title: Text('${widget.bookName} ${widget.chapterNumber}'),
+      titleSpacing: 0,
+      title: TextButton(
+        onPressed: () => _pickPassage(books),
+        style: TextButton.styleFrom(
+          foregroundColor: Theme.of(context).colorScheme.onSurface,
+          textStyle: Theme.of(context).textTheme.titleLarge,
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Flexible(child: Text('${widget.bookName} ${widget.chapterNumber}', overflow: TextOverflow.ellipsis)),
+            const Icon(Icons.arrow_drop_down),
+          ],
+        ),
+      ),
       actions: [
         IconButton(
           icon: Icon(Icons.palette_outlined, color: settings.favoriteColor.color),
@@ -519,7 +569,7 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
           ? _buildMultiSelectAppBar()
           : _selectedVerse != null
               ? _buildSelectedVerseAppBar(favorites, notes, doubts, settings.favoriteColor)
-              : _buildDefaultAppBar(settings),
+              : _buildDefaultAppBar(settings, books),
       body: verses == null
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -656,7 +706,7 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
                                     child: ReferenceText(
                                       text: note,
                                       books: books,
-                                      onReferenceTap: openBibleReference,
+                                      onReferenceTap: previewBibleReference,
                                       style: TextStyle(
                                         fontStyle: FontStyle.italic,
                                         color: Theme.of(context).colorScheme.primary,
@@ -678,7 +728,7 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
                                     child: ReferenceText(
                                       text: doubts.noteFor(widget.bookId, widget.chapterNumber, verseNumber)!,
                                       books: books,
-                                      onReferenceTap: openBibleReference,
+                                      onReferenceTap: previewBibleReference,
                                       style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.deepPurple),
                                     ),
                                   ),
