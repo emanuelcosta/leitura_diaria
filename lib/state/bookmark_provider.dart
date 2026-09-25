@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/models/reading_bookmark.dart';
 import '../data/repositories/bookmark_repository.dart';
 import '../data/repositories/bookmark_sync_repository.dart';
+import '../services/auth_service.dart';
 
 /// "Continuar de onde parei". Unlike the list-shaped sync providers
 /// (favorites, notes, doubts), this holds one mutable value, so a sign-in
@@ -25,8 +26,10 @@ class BookmarkProvider extends ChangeNotifier {
         _syncRepo = syncRepo {
     if (_syncRepo != null) {
       _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((state) {
-        if (state.event == AuthChangeEvent.signedIn) {
-          pullFromRemoteAndMerge();
+        if (AuthService.startsSession(state)) {
+          // Background pull: failures (e.g. offline at startup) are swallowed
+          // on purpose — "Sincronizar agora" is where sync errors surface.
+          unawaited(pullFromRemoteAndMerge().catchError((_) {}));
         }
       });
     }

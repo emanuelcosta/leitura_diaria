@@ -7,8 +7,10 @@ import '../models/book.dart';
 import '../models/chapter.dart';
 
 /// Parses assets/reading_plan.json and bulk-inserts books + chapters into an
-/// empty database inside a single transaction. Call only once, guarded by
-/// SettingsRepository.hasSeeded — never call again after the first success.
+/// empty database inside a single transaction. Guarded by
+/// SettingsRepository.hasSeeded plus BookRepository.hasBooks — only runs
+/// again if the books table turns out empty (inserts use replace, so a
+/// re-run can't duplicate rows).
 class SeedLoader {
   static Future<void> seed(Database db) async {
     final raw = await rootBundle.loadString('assets/reading_plan.json');

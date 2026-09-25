@@ -25,6 +25,14 @@ class AuthService {
 
   SupabaseClient get _client => Supabase.instance.client;
 
+  /// When the sync providers should pull+merge: a fresh sign-in, or the app
+  /// starting with a session already saved (Supabase emits `initialSession`,
+  /// not `signedIn`, for that — so a device that stays logged in would
+  /// otherwise never receive what other devices pushed).
+  static bool startsSession(AuthState state) =>
+      state.event == AuthChangeEvent.signedIn ||
+      (state.event == AuthChangeEvent.initialSession && state.session != null);
+
   static Future<void> init({required String url, required String publishableKey}) {
     return Supabase.initialize(url: url, publishableKey: publishableKey);
   }

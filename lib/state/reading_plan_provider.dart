@@ -16,6 +16,7 @@ import '../logic/chapter_progress_merge.dart';
 import '../logic/schedule_calculator.dart';
 import '../logic/streak_calculator.dart';
 import '../logic/verse_progress.dart';
+import '../services/auth_service.dart';
 
 class ReadingPlanProvider extends ChangeNotifier {
   final ChapterRepository _chapterRepo;
@@ -40,8 +41,10 @@ class ReadingPlanProvider extends ChangeNotifier {
     // initialized) — tests and offline builds pass none and skip this.
     if (_syncRepo != null) {
       _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((state) {
-        if (state.event == AuthChangeEvent.signedIn) {
-          pullFromRemoteAndMerge();
+        if (AuthService.startsSession(state)) {
+          // Background pull: failures (e.g. offline at startup) are swallowed
+          // on purpose — "Sincronizar agora" is where sync errors surface.
+          unawaited(pullFromRemoteAndMerge().catchError((_) {}));
         }
       });
     }
@@ -62,13 +65,21 @@ class ReadingPlanProvider extends ChangeNotifier {
   OverallProgress get overallProgress =>
       _overallProgress ?? const OverallProgress(readCount: 0, totalCount: 0);
 
+  Future<void>? _initFuture;
+
   /// Ensures the DB is seeded (once) and plan metadata is loaded. Safe to call
-  /// every app start; only seeds the very first time.
-  Future<void> initialize() async {
-    if (_initialized) return;
+  /// every app start; only seeds the very first time. Memoized so concurrent
+  /// callers (main.dart and the startup sync pull) share one run.
+  Future<void> initialize() => _initFuture ??= _initialize();
+
+  Future<void> _initialize() async {
     _meta = await ReadingPlanMeta.load();
 
-    final hasSeeded = await _settingsRepo.getHasSeeded();
+    // The flag lives in SharedPreferences, the data in SQLite — they can
+    // drift (e.g. the DB file deleted/replaced while prefs survive), which
+    // left an empty chapters table that sync merges silently no-op'd into.
+    // The DB itself is the source of truth; seeding is idempotent (replace).
+    final hasSeeded = await _settingsRepo.getHasSeeded() && await _bookRepo.hasBooks();
     if (!hasSeeded) {
       final db = await AppDatabase.instance.database;
       await SeedLoader.seed(db);
@@ -164,6 +175,9 @@ class ReadingPlanProvider extends ChangeNotifier {
   Future<void> pullFromRemoteAndMerge() async {
     final syncRepo = _syncRepo;
     if (syncRepo == null) return;
+    // On startup this races initialize(): merging before the seed lands
+    // would write into an empty chapters table and drop remote progress.
+    await initialize();
     final remote = await syncRepo.pullAll();
     final merged = mergeChapterProgress(await _chapterRepo.getAllChapters(), remote);
     await _chapterRepo.applyRemoteState(merged.map((c) => (

@@ -11,6 +11,13 @@ class BookProgress {
 }
 
 class BookRepository {
+  /// True once the reading plan has been seeded into this database.
+  Future<bool> hasBooks() async {
+    final db = await AppDatabase.instance.database;
+    final rows = await db.rawQuery('SELECT 1 FROM books LIMIT 1');
+    return rows.isNotEmpty;
+  }
+
   Future<List<Book>> getAllBooks() async {
     final db = await AppDatabase.instance.database;
     final rows = await db.query('books', orderBy: 'book_order ASC');

@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class AppDatabase {
   AppDatabase._();
 
   static final AppDatabase instance = AppDatabase._();
+
+  static const _fileName = 'reading_diary.db';
 
   Database? _db;
 
@@ -13,9 +18,27 @@ class AppDatabase {
     return _db!;
   }
 
+  /// Desktop only (call after switching to the ffi factory, before first
+  /// use). sqflite_common_ffi's default path is `.dart_tool/...` relative to
+  /// the working directory — on Windows that's inside the build output, so a
+  /// rebuild/`flutter clean` or moving the app folder silently lost the DB.
+  /// Moves it to the per-user app data dir (%APPDATA%\<company>\<product>),
+  /// copying a DB found at the old location once so nothing already stored
+  /// locally is lost.
+  static Future<void> useAppSupportDirectory() async {
+    final legacy = File(p.join(await getDatabasesPath(), _fileName));
+    final dir = (await getApplicationSupportDirectory()).path;
+    final target = File(p.join(dir, _fileName));
+    if (!target.existsSync() && legacy.existsSync()) {
+      await target.parent.create(recursive: true);
+      await legacy.copy(target.path);
+    }
+    await databaseFactory.setDatabasesPath(dir);
+  }
+
   Future<Database> _open() async {
     final dbPath = await getDatabasesPath();
-    final path = p.join(dbPath, 'reading_diary.db');
+    final path = p.join(dbPath, _fileName);
     return openDatabase(
       path,
       version: 5,

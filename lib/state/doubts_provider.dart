@@ -7,6 +7,7 @@ import '../data/models/doubt_verse.dart';
 import '../data/repositories/doubt_sync_repository.dart';
 import '../data/repositories/doubt_verse_repository.dart';
 import '../logic/sync_merge.dart';
+import '../services/auth_service.dart';
 
 /// Mirrors FavoritesProvider's pattern for the "tenho dúvida" highlight,
 /// plus an optional note per doubt (what the user was thinking).
@@ -23,8 +24,10 @@ class DoubtsProvider extends ChangeNotifier {
         _syncRepo = syncRepo {
     if (_syncRepo != null) {
       _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((state) {
-        if (state.event == AuthChangeEvent.signedIn) {
-          pullFromRemoteAndMerge();
+        if (AuthService.startsSession(state)) {
+          // Background pull: failures (e.g. offline at startup) are swallowed
+          // on purpose — "Sincronizar agora" is where sync errors surface.
+          unawaited(pullFromRemoteAndMerge().catchError((_) {}));
         }
       });
     }

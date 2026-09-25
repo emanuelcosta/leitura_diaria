@@ -46,3 +46,5 @@ app.*.map.json
 senhas.md
 .env
 leituradiarianotifications-firebase-adminsdk-fbsvc-4596aa7992.json
+# Visual Studio local cache (indexes, Copilot state)
+.vs/

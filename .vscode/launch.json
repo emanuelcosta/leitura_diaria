@@ -4,7 +4,7 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-    
+
         {
             "name": "leitura_diaria",
             "request": "launch",
@@ -21,6 +21,33 @@
             "request": "launch",
             "type": "dart",
             "flutterMode": "release"
+        },
+        {
+            "name": "Flutter: Launch (Windows)",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "deviceId": "windows",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "flutter pub get"
+        },
+        {
+            "name": "Flutter: Launch (macOS)",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "deviceId": "macos",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "flutter pub get"
+        },
+        {
+            "name": "Flutter: Launch (Linux)",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib/main.dart",
+            "deviceId": "linux",
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "flutter pub get"
         }
     ]
 }
