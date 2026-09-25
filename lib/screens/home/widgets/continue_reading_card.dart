@@ -28,6 +28,7 @@ class ContinueReadingCard extends StatelessWidget {
               bookName: bookmark.bookName,
               chapterNumber: bookmark.chapterNumber,
               initialVerseNumber: bookmark.verseNumber,
+              selectInitialVerse: false,
             ),
           ),
         ),

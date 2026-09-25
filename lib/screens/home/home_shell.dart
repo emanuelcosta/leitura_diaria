@@ -1,5 +1,10 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../../state/auth_provider.dart';
+import '../../state/sync_all.dart';
 import '../more/more_screen.dart';
 import '../notes/notes_screen.dart';
 import '../progress/book_progress_screen.dart';
@@ -13,11 +18,39 @@ class HomeShell extends StatefulWidget {
   State<HomeShell> createState() => _HomeShellState();
 }
 
-class _HomeShellState extends State<HomeShell> {
+class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   static const _searchIndex = 2;
+
+  /// Minimum gap between resume syncs, so flipping between apps doesn't
+  /// fire a full pull every time.
+  static const _resumeSyncInterval = Duration(minutes: 1);
 
   int _index = 0;
   final _searchFocus = FocusNode();
+  DateTime? _lastResumeSync;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  /// The startup/sign-in pull only runs when the app is launched fresh. On a
+  /// phone the app usually just comes back from the background, so without
+  /// this a device left open kept showing stale data — most visibly "onde
+  /// parei" — until a restart or "Sincronizar agora".
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state != AppLifecycleState.resumed) return;
+    if (!context.read<AuthProvider>().isSignedIn) return;
+    final now = DateTime.now();
+    final last = _lastResumeSync;
+    if (last != null && now.difference(last) < _resumeSyncInterval) return;
+    _lastResumeSync = now;
+    // Background pull: failures (offline, etc.) are swallowed on purpose,
+    // same as the startup pull — "Sincronizar agora" is where errors show.
+    unawaited(pullAllFromRemote(context).catchError((_) => const <void>[]));
+  }
 
   static const _titles = ['Início', 'Livros', 'Buscar', 'Notas', 'Mais'];
 
@@ -31,6 +64,7 @@ class _HomeShellState extends State<HomeShell> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _searchFocus.dispose();
     super.dispose();
   }

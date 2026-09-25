@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:provider/provider.dart';
@@ -58,9 +60,14 @@ class ChapterReadingScreen extends StatefulWidget {
   final int chapterNumber;
 
   /// When set (e.g. arriving from search/favorites/comments results), that
-  /// verse starts pre-selected — highlighted and scrolled into view — same
-  /// as if the user had just tapped it.
+  /// verse is scrolled into view and — unless [selectInitialVerse] is false
+  /// — starts pre-selected, same as if the user had just tapped it.
   final int? initialVerseNumber;
+
+  /// False for "Continuar de onde parei": land on the verse without
+  /// selecting it (selection swaps the app bar for the verse action bar,
+  /// which gets in the way when you just want to keep reading).
+  final bool selectInitialVerse;
 
   const ChapterReadingScreen({
     super.key,
@@ -69,6 +76,7 @@ class ChapterReadingScreen extends StatefulWidget {
     required this.bookName,
     required this.chapterNumber,
     this.initialVerseNumber,
+    this.selectInitialVerse = true,
   });
 
   @override
@@ -87,8 +95,27 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
   int? _selectedVerse;
   bool _multiSelectMode = false;
   Set<int> _multiSelected = {};
-  final _initialVerseKey = GlobalKey();
   bool _scrolledToInitial = false;
+
+  // --- "Onde parei": the verse at the reading line is saved as the bookmark
+  // a few seconds after scrolling stops. ---
+
+  /// How far down the viewport the "reading line" sits. The same fraction
+  /// is used to scroll back to a saved verse (_scrollToInitialVerseOnce), so
+  /// saving and restoring land on the same spot.
+  static const _readingLine = 0.2;
+  static const _bookmarkDelay = Duration(seconds: 3);
+
+  final _listKey = GlobalKey();
+  // Only verses currently built have a mounted key (ListView.builder is
+  // lazy) — enough, since the reading line is always inside the viewport.
+  final Map<int, GlobalKey> _verseKeys = {};
+  late final BookmarkProvider _bookmarks;
+  Timer? _bookmarkTimer;
+  int? _pendingBookmarkVerse;
+  int? _lastSavedVerse;
+
+  GlobalKey _keyFor(int verseNumber) => _verseKeys.putIfAbsent(verseNumber, GlobalKey.new);
 
   // Tracked locally instead of re-fetched from the DB on every toggle: a
   // fresh Future/FutureBuilder round-trip after marking read briefly showed
@@ -108,19 +135,63 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
     // per-chapter verse counts aren't known without the chapter text itself
     // loading (async). _loadVerses() below re-validates once that arrives
     // and clears this if the verse turns out not to exist.
-    _selectedVerse = widget.initialVerseNumber;
+    _selectedVerse = widget.selectInitialVerse ? widget.initialVerseNumber : null;
+    // Cached so dispose() can still flush a pending bookmark save.
+    _bookmarks = context.read<BookmarkProvider>();
     _loadVerses();
     _loadReadState();
   }
 
+  @override
+  void dispose() {
+    // Leaving before the delay elapsed still counts as "where I stopped".
+    if (_bookmarkTimer?.isActive ?? false) {
+      _bookmarkTimer!.cancel();
+      _autoSaveBookmark(verseNumber: _pendingBookmarkVerse);
+    }
+    super.dispose();
+  }
+
   Future<void> _autoSaveBookmark({int? verseNumber}) {
-    return context.read<BookmarkProvider>().save(
-          bookId: widget.bookId,
-          bookOrder: widget.bookOrder,
-          bookName: widget.bookName,
-          chapterNumber: widget.chapterNumber,
-          verseNumber: verseNumber,
-        );
+    _lastSavedVerse = verseNumber;
+    return _bookmarks.save(
+      bookId: widget.bookId,
+      bookOrder: widget.bookOrder,
+      bookName: widget.bookName,
+      chapterNumber: widget.chapterNumber,
+      verseNumber: verseNumber,
+    );
+  }
+
+  /// The verse crossing the reading line, or null at the very top of the
+  /// chapter (nothing to resume into — just open the chapter).
+  int? _verseAtReadingLine(ScrollMetrics metrics) {
+    if (metrics.pixels <= 0) return null;
+    final listBox = _listKey.currentContext?.findRenderObject() as RenderBox?;
+    if (listBox == null || !listBox.hasSize) return null;
+    final lineY = listBox.localToGlobal(Offset.zero).dy + listBox.size.height * _readingLine;
+    int? best;
+    for (final entry in _verseKeys.entries) {
+      final box = entry.value.currentContext?.findRenderObject() as RenderBox?;
+      if (box == null || !box.attached || !box.hasSize) continue;
+      final top = box.localToGlobal(Offset.zero).dy;
+      // Small tolerance: a verse restored with ensureVisible sits exactly on
+      // the line, and rounding shouldn't flip it to the verse above.
+      if (top <= lineY + 2 && (best == null || entry.key > best)) best = entry.key;
+    }
+    return best;
+  }
+
+  bool _onScrollEnd(ScrollEndNotification notification) {
+    final verse = _verseAtReadingLine(notification.metrics);
+    if (verse == _lastSavedVerse) {
+      _bookmarkTimer?.cancel();
+      return false;
+    }
+    _pendingBookmarkVerse = verse;
+    _bookmarkTimer?.cancel();
+    _bookmarkTimer = Timer(_bookmarkDelay, () => _autoSaveBookmark(verseNumber: _pendingBookmarkVerse));
+    return false;
   }
 
   Future<void> _loadVerses() async {
@@ -152,9 +223,12 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
     }
     // "Continuar de onde parei" is automatic, not a manual save button:
     // simply opening a chapter is "the last text I entered", so it becomes
-    // the bookmark right away — using the now-validated _selectedVerse, not
-    // the raw (possibly out-of-range) widget.initialVerseNumber.
-    _autoSaveBookmark(verseNumber: _selectedVerse);
+    // the bookmark right away (scrolling then refines the verse, see
+    // _onScrollEnd) — using the validated verse, not the raw (possibly
+    // out-of-range) widget.initialVerseNumber.
+    final validInitial =
+        requestedVerse != null && requestedVerse >= 1 && requestedVerse <= verses.length ? requestedVerse : null;
+    _autoSaveBookmark(verseNumber: validInitial);
     _scrollToInitialVerseOnce();
   }
 
@@ -171,9 +245,9 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
     if (_scrolledToInitial || widget.initialVerseNumber == null) return;
     _scrolledToInitial = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final ctx = _initialVerseKey.currentContext;
+      final ctx = _verseKeys[widget.initialVerseNumber]?.currentContext;
       if (ctx != null) {
-        Scrollable.ensureVisible(ctx, alignment: 0.2, duration: const Duration(milliseconds: 300));
+        Scrollable.ensureVisible(ctx, alignment: _readingLine, duration: const Duration(milliseconds: 300));
       }
     });
   }
@@ -183,8 +257,12 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
     await context.read<ReadingPlanProvider>().setChapterRead(_chapterId, isRead: isRead);
     // The last chapter marked read is another strong "where I stopped"
     // signal — re-save the bookmark so it reflects the just-finished spot,
-    // not whatever verse happened to be selected before.
-    if (isRead) await _autoSaveBookmark();
+    // not whatever verse happened to be selected before. A pending scroll
+    // save is dropped so it can't overwrite this a few seconds later.
+    if (isRead) {
+      _bookmarkTimer?.cancel();
+      await _autoSaveBookmark();
+    }
   }
 
   Book _currentBook(List<Book> books) => books.firstWhere((b) => b.id == widget.bookId);
@@ -572,175 +650,179 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
               : _buildDefaultAppBar(settings, books),
       body: verses == null
           ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              // ListView.builder only builds items near the viewport, so the
-              // target verse's GlobalKey wouldn't exist yet for
-              // Scrollable.ensureVisible if it's far down the chapter. The
-              // longest chapter (Salmos 119) is 176 short verses, so forcing
-              // everything to build up front is cheap and avoids that.
-              cacheExtent: widget.initialVerseNumber != null ? 100000 : null,
-              itemCount: verses.length + 1,
-              itemBuilder: (context, i) {
-                if (i == verses.length) {
-                  return Padding(
-                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-                    child: Column(
-                      children: [
-                        if (!_readStateLoaded)
-                          const SizedBox(
-                            height: 36,
-                            child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                          )
-                        else if (_isRead)
-                          OutlinedButton.icon(
-                            onPressed: () => _markRead(false),
-                            icon: const Icon(Icons.check_circle, size: 18),
-                            label: const Text('Capítulo lido — desmarcar'),
-                          )
-                        else
-                          FilledButton.icon(
-                            onPressed: () => _markRead(true),
-                            icon: const Icon(Icons.check, size: 18),
-                            label: const Text('Marcar capítulo como lido'),
-                          ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            TextButton.icon(
-                              onPressed: _hasPrevious(books) ? () => _goPrevious(books) : null,
-                              icon: const Icon(Icons.chevron_left),
-                              label: const Text('Capítulo anterior'),
-                            ),
-                            TextButton(
-                              onPressed: _hasNext(books) ? () => _goNext(books) : null,
-                              child: const Row(
-                                children: [
-                                  Text('Próximo capítulo'),
-                                  Icon(Icons.chevron_right),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  );
-                }
-
-                final verseNumber = i + 1;
-                final isFavorite = favorites.isFavorite(widget.bookId, widget.chapterNumber, verseNumber);
-                final isDoubt = doubts.isDoubt(widget.bookId, widget.chapterNumber, verseNumber);
-                final note = notes.noteFor(widget.bookId, widget.chapterNumber, verseNumber);
-                final isMultiSelected = _multiSelected.contains(verseNumber);
-                final isSelected = !_multiSelectMode && _selectedVerse == verseNumber;
-                // Priority when not actively selected: selection (blue) >
-                // dúvida (purple) > favorito (user-chosen color) > none. A verse can be
-                // both favorited and doubted; the purple tint wins so
-                // pending-research verses stay easy to spot while reading.
-                Color? highlight() {
-                  if (isDoubt) return Colors.deepPurple.withValues(alpha: 0.12);
-                  if (isFavorite) return settings.favoriteColor.highlight;
-                  return null;
-                }
-
-                return Container(
-                  key: verseNumber == widget.initialVerseNumber ? _initialVerseKey : null,
-                  color: _multiSelectMode
-                      ? (isMultiSelected ? Colors.lightBlue.withValues(alpha: 0.25) : highlight())
-                      : (isSelected ? Colors.lightBlue.withValues(alpha: 0.15) : highlight()),
-                  child: InkWell(
-                    onTap: () {
-                      if (_multiSelectMode) {
-                        setState(() {
-                          if (isMultiSelected) {
-                            _multiSelected.remove(verseNumber);
-                            if (_multiSelected.isEmpty) _multiSelectMode = false;
-                          } else {
-                            _multiSelected.add(verseNumber);
-                          }
-                        });
-                      } else {
-                        setState(() => _selectedVerse = isSelected ? null : verseNumber);
-                      }
-                    },
-                    onLongPress: _multiSelectMode
-                        ? null
-                        : () => setState(() {
-                              _multiSelectMode = true;
-                              _selectedVerse = null;
-                              _multiSelected = {verseNumber};
-                            }),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          : NotificationListener<ScrollEndNotification>(
+              onNotification: _onScrollEnd,
+              child: ListView.builder(
+                key: _listKey,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                // ListView.builder only builds items near the viewport, so the
+                // target verse's GlobalKey wouldn't exist yet for
+                // Scrollable.ensureVisible if it's far down the chapter. The
+                // longest chapter (Salmos 119) is 176 short verses, so forcing
+                // everything to build up front is cheap and avoids that.
+                cacheExtent: widget.initialVerseNumber != null ? 100000 : null,
+                itemCount: verses.length + 1,
+                itemBuilder: (context, i) {
+                  if (i == verses.length) {
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          RichText(
-                            text: TextSpan(
-                              style: DefaultTextStyle.of(context).style.copyWith(
-                                    height: 1.4,
-                                    fontSize: (DefaultTextStyle.of(context).style.fontSize ?? 14) *
-                                        settings.fontScale,
-                                  ),
-                              children: [
-                                TextSpan(
-                                  text: '$verseNumber ',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold, fontSize: 12 * settings.fontScale),
+                          if (!_readStateLoaded)
+                            const SizedBox(
+                              height: 36,
+                              child: Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                            )
+                          else if (_isRead)
+                            OutlinedButton.icon(
+                              onPressed: () => _markRead(false),
+                              icon: const Icon(Icons.check_circle, size: 18),
+                              label: const Text('Capítulo lido — desmarcar'),
+                            )
+                          else
+                            FilledButton.icon(
+                              onPressed: () => _markRead(true),
+                              icon: const Icon(Icons.check, size: 18),
+                              label: const Text('Marcar capítulo como lido'),
+                            ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TextButton.icon(
+                                onPressed: _hasPrevious(books) ? () => _goPrevious(books) : null,
+                                icon: const Icon(Icons.chevron_left),
+                                label: const Text('Capítulo anterior'),
+                              ),
+                              TextButton(
+                                onPressed: _hasNext(books) ? () => _goNext(books) : null,
+                                child: const Row(
+                                  children: [
+                                    Text('Próximo capítulo'),
+                                    Icon(Icons.chevron_right),
+                                  ],
                                 ),
-                                TextSpan(text: verses[i]),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          if (note != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Icon(Icons.note, size: 14, color: Theme.of(context).colorScheme.primary),
-                                  const SizedBox(width: 4),
-                                  Expanded(
-                                    child: ReferenceText(
-                                      text: note,
-                                      books: books,
-                                      onReferenceTap: previewBibleReference,
-                                      style: TextStyle(
-                                        fontStyle: FontStyle.italic,
-                                        color: Theme.of(context).colorScheme.primary,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          if (isDoubt && doubts.noteFor(widget.bookId, widget.chapterNumber, verseNumber) != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(Icons.help, size: 14, color: Colors.deepPurple),
-                                  const SizedBox(width: 4),
-                                  Expanded(
-                                    child: ReferenceText(
-                                      text: doubts.noteFor(widget.bookId, widget.chapterNumber, verseNumber)!,
-                                      books: books,
-                                      onReferenceTap: previewBibleReference,
-                                      style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.deepPurple),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
                         ],
                       ),
+                    );
+                  }
+
+                  final verseNumber = i + 1;
+                  final isFavorite = favorites.isFavorite(widget.bookId, widget.chapterNumber, verseNumber);
+                  final isDoubt = doubts.isDoubt(widget.bookId, widget.chapterNumber, verseNumber);
+                  final note = notes.noteFor(widget.bookId, widget.chapterNumber, verseNumber);
+                  final isMultiSelected = _multiSelected.contains(verseNumber);
+                  final isSelected = !_multiSelectMode && _selectedVerse == verseNumber;
+                  // Priority when not actively selected: selection (blue) >
+                  // dúvida (purple) > favorito (user-chosen color) > none. A verse can be
+                  // both favorited and doubted; the purple tint wins so
+                  // pending-research verses stay easy to spot while reading.
+                  Color? highlight() {
+                    if (isDoubt) return Colors.deepPurple.withValues(alpha: 0.12);
+                    if (isFavorite) return settings.favoriteColor.highlight;
+                    return null;
+                  }
+
+                  return Container(
+                    key: _keyFor(verseNumber),
+                    color: _multiSelectMode
+                        ? (isMultiSelected ? Colors.lightBlue.withValues(alpha: 0.25) : highlight())
+                        : (isSelected ? Colors.lightBlue.withValues(alpha: 0.15) : highlight()),
+                    child: InkWell(
+                      onTap: () {
+                        if (_multiSelectMode) {
+                          setState(() {
+                            if (isMultiSelected) {
+                              _multiSelected.remove(verseNumber);
+                              if (_multiSelected.isEmpty) _multiSelectMode = false;
+                            } else {
+                              _multiSelected.add(verseNumber);
+                            }
+                          });
+                        } else {
+                          setState(() => _selectedVerse = isSelected ? null : verseNumber);
+                        }
+                      },
+                      onLongPress: _multiSelectMode
+                          ? null
+                          : () => setState(() {
+                                _multiSelectMode = true;
+                                _selectedVerse = null;
+                                _multiSelected = {verseNumber};
+                              }),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                style: DefaultTextStyle.of(context).style.copyWith(
+                                      height: 1.4,
+                                      fontSize: (DefaultTextStyle.of(context).style.fontSize ?? 14) *
+                                          settings.fontScale,
+                                    ),
+                                children: [
+                                  TextSpan(
+                                    text: '$verseNumber ',
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold, fontSize: 12 * settings.fontScale),
+                                  ),
+                                  TextSpan(text: verses[i]),
+                                ],
+                              ),
+                            ),
+                            if (note != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(Icons.note, size: 14, color: Theme.of(context).colorScheme.primary),
+                                    const SizedBox(width: 4),
+                                    Expanded(
+                                      child: ReferenceText(
+                                        text: note,
+                                        books: books,
+                                        onReferenceTap: previewBibleReference,
+                                        style: TextStyle(
+                                          fontStyle: FontStyle.italic,
+                                          color: Theme.of(context).colorScheme.primary,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            if (isDoubt && doubts.noteFor(widget.bookId, widget.chapterNumber, verseNumber) != null)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Icon(Icons.help, size: 14, color: Colors.deepPurple),
+                                    const SizedBox(width: 4),
+                                    Expanded(
+                                      child: ReferenceText(
+                                        text: doubts.noteFor(widget.bookId, widget.chapterNumber, verseNumber)!,
+                                        books: books,
+                                        onReferenceTap: previewBibleReference,
+                                        style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.deepPurple),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
     );
   }

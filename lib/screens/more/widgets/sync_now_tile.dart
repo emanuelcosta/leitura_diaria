@@ -1,11 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '../../../state/bookmark_provider.dart';
-import '../../../state/doubts_provider.dart';
-import '../../../state/favorites_provider.dart';
-import '../../../state/reading_plan_provider.dart';
-import '../../../state/verse_notes_provider.dart';
+import '../../../state/sync_all.dart';
 
 /// "Sincronizar agora": runs the same merge the sign-in does, on demand.
 /// Every merge is a union (see lib/logic/sync_merge.dart), so tapping it can
@@ -25,13 +20,7 @@ class _SyncNowTileState extends State<SyncNowTile> {
     setState(() => _syncing = true);
     final messenger = ScaffoldMessenger.of(context);
     try {
-      await Future.wait([
-        context.read<ReadingPlanProvider>().pullFromRemoteAndMerge(),
-        context.read<FavoritesProvider>().pullFromRemoteAndMerge(),
-        context.read<VerseNotesProvider>().pullFromRemoteAndMerge(),
-        context.read<DoubtsProvider>().pullFromRemoteAndMerge(),
-        context.read<BookmarkProvider>().pullFromRemoteAndMerge(),
-      ]);
+      await pullAllFromRemote(context);
       messenger.showSnackBar(
         const SnackBar(content: Text('Dados sincronizados', style: TextStyle(color: Colors.white),), backgroundColor: Colors.green),
       );
@@ -52,7 +41,7 @@ class _SyncNowTileState extends State<SyncNowTile> {
           ? const SizedBox.square(dimension: 24, child: CircularProgressIndicator(strokeWidth: 2))
           : const Icon(Icons.sync),
       title: const Text('Sincronizar agora'),
-      subtitle: const Text('Envia e recebe progresso, favoritos, notas e dúvidas'),
+      subtitle: const Text('Envia e recebe progresso, onde parou, favoritos, notas e dúvidas'),
       enabled: !_syncing,
       onTap: _sync,
     );
