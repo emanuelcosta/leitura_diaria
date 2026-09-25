@@ -23,12 +23,13 @@ class DoubtVerseRepository {
   }
 
   /// Updates just the note on an already-marked doubt, keeping its original
-  /// createdAt (unlike [add], which would reset it).
-  Future<void> setNote(String bookId, int chapterNumber, int verseNumber, String? note) async {
+  /// createdAt (unlike [add], which would reset it) and stamping [updatedAt]
+  /// so this edit wins over older copies on other devices.
+  Future<void> setNote(String bookId, int chapterNumber, int verseNumber, String? note, DateTime updatedAt) async {
     final db = await AppDatabase.instance.database;
     await db.update(
       'doubt_verses',
-      {'note': note},
+      {'note': note, 'updated_at': updatedAt.toIso8601String()},
       where: 'id = ?',
       whereArgs: ['$bookId-$chapterNumber-$verseNumber'],
     );

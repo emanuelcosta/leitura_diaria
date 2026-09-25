@@ -10,6 +10,7 @@ import '../../state/settings_provider.dart';
 import '../../widgets/chapter_card.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/section_header.dart';
+import '../../widgets/sync_refresh.dart';
 import '../heatmap/heatmap_screen.dart';
 import '../heatmap/widgets/heatmap_grid.dart';
 import 'widgets/continue_reading_card.dart';
@@ -53,103 +54,104 @@ class _HomeScreenState extends State<HomeScreen> {
           return const Center(child: CircularProgressIndicator());
         }
         final chapters = snapshot.data!;
-        return ListView(
-          padding: const EdgeInsets.only(top: 8, bottom: 24),
-          children: [
-            if (bookmark != null)
+        return SyncRefresh(
+          child: ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(top: 8, bottom: 24),
+            children: [
+              if (bookmark != null)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: ContinueReadingCard(bookmark: bookmark),
+                ),
+              if (doubts.count > 0)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+                  child: DoubtsSummaryCard(count: doubts.count),
+                ),
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: ContinueReadingCard(bookmark: bookmark),
-              ),
-            if (doubts.count > 0)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-                child: DoubtsSummaryCard(count: doubts.count),
-              ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: DayNavigator(
-                currentDay: day,
-                totalDays: plan.meta.totalPlanDays,
-                onDayChanged: (d) => setState(() => _selectedDay = d),
-              ),
-            ),
-            if (day != idealDay)
-              Center(
-                child: TextButton(
-                  onPressed: () => setState(() => _selectedDay = null),
-                  child: Text('Voltar para hoje (dia $idealDay)'),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: DayNavigator(
+                  currentDay: day,
+                  totalDays: plan.meta.totalPlanDays,
+                  onDayChanged: (d) => setState(() => _selectedDay = d),
                 ),
               ),
-            const Divider(height: 17),
-            if (chapters.isEmpty)
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 24),
-                child: EmptyState(
-                  icon: Icons.menu_book_outlined,
-                  message: 'Nenhum capítulo novo neste dia do plano.',
+              if (day != idealDay)
+                Center(
+                  child: TextButton(
+                    onPressed: () => setState(() => _selectedDay = null),
+                    child: Text('Voltar para hoje (dia $idealDay)'),
+                  ),
                 ),
-              )
-            else
-              ...chapters.map((c) => ChapterCard(view: c)),
-            const Divider(height: 33),
-            const SectionHeader(title: 'Seu progresso'),
-            const SizedBox(height: 16),
-            ProgressSection(chapterProgress: progress),
-            const SizedBox(height: 24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: FutureBuilder<StreakResult>(
+              const Divider(height: 17),
+              if (chapters.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: EmptyState(
+                    icon: Icons.menu_book_outlined,
+                    message: 'Nenhum capítulo novo neste dia do plano.',
+                  ),
+                )
+              else
+                ...chapters.map((c) => ChapterCard(view: c)),
+              const Divider(height: 33),
+              const SectionHeader(title: 'Seu progresso'),
+              const SizedBox(height: 16),
+              ProgressSection(chapterProgress: progress),
+              const SizedBox(height: 24),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: FutureBuilder<StreakResult>(
+                  key: ValueKey(progress.readCount),
+                  future: plan.computeStreak(),
+                  builder: (context, snapshot) {
+                    final streak = snapshot.data;
+                    return StreakBadge(current: streak?.currentStreak ?? 0, best: streak?.bestStreak ?? 0);
+                  },
+                ),
+              ),
+              SectionHeader(
+                title: 'Constância',
+                trailing: TextButton(
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const HeatmapScreen())),
+                  child: const Text('Ver tudo'),
+                ),
+              ),
+              FutureBuilder<Map<String, int>>(
                 key: ValueKey(progress.readCount),
-                future: plan.computeStreak(),
+                future: plan.getReadCountsByDate(),
                 builder: (context, snapshot) {
-                  final streak = snapshot.data;
-                  return StreakBadge(current: streak?.currentStreak ?? 0, best: streak?.bestStreak ?? 0);
+                  if (!snapshot.hasData) {
+                    return const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()));
+                  }
+                  return HeatmapGrid(countsByDate: snapshot.data!, weeksToShow: 8);
                 },
               ),
-            ),
-            SectionHeader(
-              title: 'Constância',
-              trailing: TextButton(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const HeatmapScreen()),
-                ),
-                child: const Text('Ver tudo'),
-              ),
-            ),
-            FutureBuilder<Map<String, int>>(
-              key: ValueKey(progress.readCount),
-              future: plan.getReadCountsByDate(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()));
-                }
-                return HeatmapGrid(countsByDate: snapshot.data!, weeksToShow: 8);
-              },
-            ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: progress.totalCount > 0 && progress.readCount >= progress.totalCount
-                  // Only the completed state needs lastReadAt (for "Concluído
-                  // em DD/MM/AAAA"), so only fetch it once the plan is
-                  // actually done — no point querying MAX(read_at) on every
-                  // build.
-                  ? FutureBuilder<DateTime?>(
-                      future: plan.getLastReadAt(),
-                      builder: (context, snapshot) => ScheduleStatusCard(
-                        status: plan.computeScheduleStatus(
-                          startDate: startDate,
-                          today: DateTime.now(),
-                          lastReadAt: snapshot.data,
+              const SizedBox(height: 16),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: progress.totalCount > 0 && progress.readCount >= progress.totalCount
+                    // Only the completed state needs lastReadAt (for "Concluído
+                    // em DD/MM/AAAA"), so only fetch it once the plan is
+                    // actually done — no point querying MAX(read_at) on every
+                    // build.
+                    ? FutureBuilder<DateTime?>(
+                        future: plan.getLastReadAt(),
+                        builder: (context, snapshot) => ScheduleStatusCard(
+                          status: plan.computeScheduleStatus(
+                            startDate: startDate,
+                            today: DateTime.now(),
+                            lastReadAt: snapshot.data,
+                          ),
                         ),
+                      )
+                    : ScheduleStatusCard(
+                        status: plan.computeScheduleStatus(startDate: startDate, today: DateTime.now()),
                       ),
-                    )
-                  : ScheduleStatusCard(
-                      status: plan.computeScheduleStatus(startDate: startDate, today: DateTime.now()),
-                    ),
-            ),
-          ],
+              ),
+            ],
+          ),
         );
       },
     );

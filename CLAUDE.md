@@ -51,8 +51,22 @@ provider. Repita esse formato para qualquer novo dado do usuário.
   `nullable` no provider — `null` quando o Supabase não está configurado
   (ver `main.dart`), e todo método de push é fire-and-forget
   (`unawaited(...).catchError((_) {})`) pra nunca travar a UI numa operação
-  de rede. Pull/merge roda uma vez no login (`pullFromRemoteAndMerge`,
-  disparado por `Supabase...auth.onAuthStateChange`).
+  de rede. Pull/merge (`pullFromRemoteAndMerge`) roda no login/abertura com
+  sessão (`AuthService.startsSession`), ao voltar do segundo plano
+  (`HomeShell`), quando a rede volta com o app aberto
+  (`ConnectivityService.onReconnected` → `HomeShell`) e no "Sincronizar
+  agora" — os três últimos via `pullAllFromRemote` (`lib/state/sync_all.dart`).
+- **Merge de sync**: união (nunca perde dado), mais **tombstones** para
+  exclusões — apagar um favorito/nota/dúvida grava `sync_tombstones` local
+  e `deleted_at` no Supabase (soft delete, nunca `DELETE`), e
+  `applyDeletions` (`lib/logic/sync_merge.dart`) faz o evento mais recente
+  vencer. O servidor purga exclusões com mais de 30 dias
+  (`deletionRetention`), então cada lista também grava o último sync
+  completo em `sync_checkpoints` e usa `missedDeletions` pra aplicar as
+  exclusões que um aparelho offline por mais tempo que isso perdeu. Uma
+  lista sincronizada nova precisa seguir o mesmo formato (tombstones +
+  checkpoint), senão exclusões "ressuscitam" vindo de outro aparelho. Horários enviados ao
+  Supabase sempre via `toRemoteTimestamp` (UTC).
 - **Factory constructors** (`fromMap`, `fromJson`, `fromCode`) nos models —
   não parseie JSON/SQL fora do model.
 - **Enums com dados anexados** em vez de strings mágicas ou `if/else`

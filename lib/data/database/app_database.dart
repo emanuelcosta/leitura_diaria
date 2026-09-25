@@ -42,7 +42,7 @@ class AppDatabase {
     final path = p.join(dbPath, _fileName);
     return openDatabase(
       path,
-      version: 6,
+      version: 9,
       onCreate: (db, version) => createSchema(db),
       onUpgrade: (db, oldVersion, newVersion) async {
         // Each step is additive (CREATE/ALTER), never DROP — see CLAUDE.md.
@@ -60,6 +60,15 @@ class AppDatabase {
         }
         if (oldVersion < 6) {
           await addFavoriteColor(db);
+        }
+        if (oldVersion < 7) {
+          await _createSyncTombstones(db);
+        }
+        if (oldVersion < 8) {
+          await _createSyncCheckpoints(db);
+        }
+        if (oldVersion < 9) {
+          await addDoubtUpdatedAt(db);
         }
       },
     );
@@ -97,6 +106,44 @@ class AppDatabase {
     await addFavoriteColor(db);
     await _createVerseNotes(db);
     await _createDoubtVerses(db);
+    await addDoubtUpdatedAt(db);
+    await _createSyncTombstones(db);
+    await _createSyncCheckpoints(db);
+  }
+
+  /// v9: doubts get updated_at (bumped when the comment is edited), so the
+  /// newest comment wins across devices instead of "whichever device synced"
+  /// (see mergeDoubts). Backfilled from created_at.
+  @visibleForTesting
+  static Future<void> addDoubtUpdatedAt(Database db) async {
+    await db.execute('ALTER TABLE doubt_verses ADD COLUMN updated_at TEXT');
+    await db.execute('UPDATE doubt_verses SET updated_at = created_at WHERE updated_at IS NULL');
+  }
+
+  /// v8: when each synced list last finished a full sync, so a device that
+  /// was away longer than the server keeps deletions can still apply them
+  /// (see missedDeletions).
+  static Future<void> _createSyncCheckpoints(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS sync_checkpoints (
+        kind TEXT PRIMARY KEY,
+        last_synced_at TEXT NOT NULL
+      )
+    ''');
+  }
+
+  /// v7: when a favorite/verse note/doubt was deleted on this device, so the
+  /// sync merge can tell "deleted here" from "not received yet" (see
+  /// applyDeletions). One table for all kinds, keyed by (kind, item id).
+  static Future<void> _createSyncTombstones(Database db) async {
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS sync_tombstones (
+        kind TEXT NOT NULL,
+        item_id TEXT NOT NULL,
+        deleted_at TEXT NOT NULL,
+        PRIMARY KEY (kind, item_id)
+      )
+    ''');
   }
 
   /// v6: each favorite gets its own marker color (existing ones become amber,

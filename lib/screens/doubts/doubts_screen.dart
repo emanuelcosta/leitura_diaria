@@ -11,6 +11,7 @@ import '../../widgets/empty_state.dart';
 import '../../widgets/note_sheet.dart';
 import '../notes/widgets/note_list_item.dart';
 import '../reading/chapter_reading_screen.dart';
+import '../../widgets/sync_refresh.dart';
 
 /// Verses marked "tenho dúvida" — pending to research/understand later.
 /// Each row shows the verse with the doubt's comment below it; tapping opens
@@ -89,32 +90,38 @@ class _DoubtsScreenState extends State<DoubtsScreen> {
         final data = snapshot.data;
         if (data == null) return const Center(child: CircularProgressIndicator());
         if (data.doubts.isEmpty) {
-          return const EmptyState(
-            icon: Icons.help_outline,
-            message: 'Toque no ícone de dúvida ao lado de um versículo, na leitura\n'
-                'do capítulo, para guardá-lo aqui e pesquisar depois.',
+          return const SyncRefresh.fill(
+            child: EmptyState(
+              icon: Icons.help_outline,
+              message:
+                  'Toque no ícone de dúvida ao lado de um versículo, na leitura\n'
+                  'do capítulo, para guardá-lo aqui e pesquisar depois.',
+            ),
           );
         }
         final books = {for (final b in data.books) b.id: b};
-        return ListView.separated(
-          itemCount: data.doubts.length,
-          separatorBuilder: (context, i) => const Divider(height: 1),
-          itemBuilder: (context, i) {
-            final doubt = data.doubts[i];
-            final book = books[doubt.bookId];
-            if (book == null) return const SizedBox.shrink();
-            final verse = data.verses[doubt.id];
-            return NoteListItem(
-              title: '${book.name} ${doubt.chapterNumber}:${doubt.verseNumber}',
-              verseText: verse,
-              note: doubt.note ?? '',
-              date: doubt.createdAt,
-              books: data.books,
-              accent: NoteKind.doubt.accent(Theme.of(context).colorScheme),
-              italicNote: true,
-              onTap: () => _open(provider, doubt, book, data.books, verse),
-            );
-          },
+        return SyncRefresh(
+          child: ListView.separated(
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: data.doubts.length,
+            separatorBuilder: (context, i) => const Divider(height: 1),
+            itemBuilder: (context, i) {
+              final doubt = data.doubts[i];
+              final book = books[doubt.bookId];
+              if (book == null) return const SizedBox.shrink();
+              final verse = data.verses[doubt.id];
+              return NoteListItem(
+                title: '${book.name} ${doubt.chapterNumber}:${doubt.verseNumber}',
+                verseText: verse,
+                note: doubt.note ?? '',
+                date: doubt.createdAt,
+                books: data.books,
+                accent: NoteKind.doubt.accent(Theme.of(context).colorScheme),
+                italicNote: true,
+                onTap: () => _open(provider, doubt, book, data.books, verse),
+              );
+            },
+          ),
         );
       },
     );

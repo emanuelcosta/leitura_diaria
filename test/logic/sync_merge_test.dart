@@ -59,6 +59,22 @@ void main() {
     expect(mergeVerseNotes([_note(1, 'local', jan)], [_note(1, 'remote', feb)]).single.note, 'remote');
   });
 
+  test('doubts: the reported bug — comment edited on desktop, Android still has the old one -> edit wins', () {
+    final mar = DateTime(2026, 3, 1);
+    DoubtVerse d(String note, DateTime updated) =>
+        DoubtVerse(bookId: 'GEN', chapterNumber: 1, verseNumber: 1, note: note, createdAt: jan, updatedAt: updated);
+
+    // Android merging: its stale local copy vs the desktop's edit on the server.
+    final onAndroid = mergeDoubts([d('curto', jan)], [d('curto\n\ntexto completo', mar)]);
+    expect(onAndroid.single.note, 'curto\n\ntexto completo');
+    expect(onAndroid.single.updatedAt, mar);
+    expect(onAndroid.single.createdAt, jan);
+
+    // Desktop merging against a stale server copy: its own edit still wins.
+    final onDesktop = mergeDoubts([d('curto\n\ntexto completo', mar)], [d('curto', feb)]);
+    expect(onDesktop.single.note, 'curto\n\ntexto completo');
+  });
+
   test('doubts: local note wins, blank local note falls back to remote; earliest date kept', () {
     final withNote = mergeDoubts([_doubt(1, feb, note: 'local')], [_doubt(1, jan, note: 'remote')]);
     expect(withNote.single.note, 'local');

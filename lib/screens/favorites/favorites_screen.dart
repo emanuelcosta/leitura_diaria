@@ -10,6 +10,7 @@ import '../../state/favorites_provider.dart';
 import '../../state/settings_provider.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/marker_picker_sheet.dart';
+import '../../widgets/sync_refresh.dart';
 import '../reading/chapter_reading_screen.dart';
 
 /// "Marcadores": every marked (favorited) verse, color-coded, with a filter
@@ -60,10 +61,13 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
           final all = snapshot.data![0] as List<FavoriteVerse>;
           final books = {for (final b in snapshot.data![1] as List<Book>) b.id: b};
           if (all.isEmpty) {
-            return const EmptyState(
-              icon: Icons.star_border,
-              message: 'Na leitura, selecione um versículo e toque na estrela\n'
-                  'para marcá-lo com uma cor.',
+            return const SyncRefresh.fill(
+              child: EmptyState(
+                icon: Icons.star_border,
+                message:
+                    'Na leitura, selecione um versículo e toque na estrela\n'
+                    'para marcá-lo com uma cor.',
+              ),
             );
           }
           // Only colors actually in use get a filter chip.
@@ -102,56 +106,59 @@ class _FavoritesScreenState extends State<FavoritesScreen> {
               ),
               const Divider(height: 1),
               Expanded(
-                child: ListView.separated(
-                  itemCount: items.length,
-                  separatorBuilder: (context, i) => const Divider(height: 1),
-                  itemBuilder: (context, i) {
-                    final favorite = items[i];
-                    final book = books[favorite.bookId];
-                    if (book == null) return const SizedBox.shrink();
-                    return IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Container(width: 5, color: favorite.color.color),
-                          Expanded(
-                            child: ListTile(
-                              title: Text('${book.name} ${favorite.chapterNumber}:${favorite.verseNumber}'),
-                              subtitle: FutureBuilder<String?>(
-                                future: _bibleRepo.getVerse(
-                                  translation: translation,
-                                  bookOrder: book.order,
-                                  chapterNumber: favorite.chapterNumber,
-                                  verseNumber: favorite.verseNumber,
-                                ),
-                                builder: (context, verseSnapshot) {
-                                  final text = verseSnapshot.data;
-                                  if (text == null) return const SizedBox.shrink();
-                                  return Text(text, maxLines: 3, overflow: TextOverflow.ellipsis);
-                                },
-                              ),
-                              trailing: IconButton(
-                                icon: Icon(Icons.star, color: favorite.color.color),
-                                tooltip: '${settings.markerName(favorite.color)} — trocar cor ou remover',
-                                onPressed: () => _changeMarker(favorites, favorite, book),
-                              ),
-                              onTap: () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => ChapterReadingScreen(
-                                    bookId: book.id,
+                child: SyncRefresh(
+                  child: ListView.separated(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: items.length,
+                    separatorBuilder: (context, i) => const Divider(height: 1),
+                    itemBuilder: (context, i) {
+                      final favorite = items[i];
+                      final book = books[favorite.bookId];
+                      if (book == null) return const SizedBox.shrink();
+                      return IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Container(width: 5, color: favorite.color.color),
+                            Expanded(
+                              child: ListTile(
+                                title: Text('${book.name} ${favorite.chapterNumber}:${favorite.verseNumber}'),
+                                subtitle: FutureBuilder<String?>(
+                                  future: _bibleRepo.getVerse(
+                                    translation: translation,
                                     bookOrder: book.order,
-                                    bookName: book.name,
                                     chapterNumber: favorite.chapterNumber,
-                                    initialVerseNumber: favorite.verseNumber,
+                                    verseNumber: favorite.verseNumber,
+                                  ),
+                                  builder: (context, verseSnapshot) {
+                                    final text = verseSnapshot.data;
+                                    if (text == null) return const SizedBox.shrink();
+                                    return Text(text, maxLines: 3, overflow: TextOverflow.ellipsis);
+                                  },
+                                ),
+                                trailing: IconButton(
+                                  icon: Icon(Icons.star, color: favorite.color.color),
+                                  tooltip: '${settings.markerName(favorite.color)} — trocar cor ou remover',
+                                  onPressed: () => _changeMarker(favorites, favorite, book),
+                                ),
+                                onTap: () => Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => ChapterReadingScreen(
+                                      bookId: book.id,
+                                      bookOrder: book.order,
+                                      bookName: book.name,
+                                      chapterNumber: favorite.chapterNumber,
+                                      initialVerseNumber: favorite.verseNumber,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
               if (filter != null)

@@ -7,6 +7,7 @@ import '../../logic/text_normalize.dart';
 import '../../state/reading_plan_provider.dart';
 import '../../widgets/empty_state.dart';
 import 'widgets/testament_section.dart';
+import '../../widgets/sync_refresh.dart';
 
 enum _ReadFilter { all, read, unread }
 
@@ -64,10 +65,7 @@ class _BookProgressScreenState extends State<BookProgressScreen> {
       ];
     }
     return BookCategory.values
-        .map((c) => TestamentSection(
-              title: c.label,
-              books: books.where((b) => b.book.category == c).toList(),
-            ))
+        .map((c) => TestamentSection(title: c.label, books: books.where((b) => b.book.category == c).toList()))
         .where((s) => s.books.isNotEmpty)
         .toList();
   }
@@ -118,9 +116,7 @@ class _BookProgressScreenState extends State<BookProgressScreen> {
               const SizedBox(width: 8),
               IconButton(
                 tooltip: _groupBy == _GroupBy.testament ? 'Agrupar por categoria' : 'Agrupar por testamento',
-                icon: Icon(
-                  _groupBy == _GroupBy.testament ? Icons.category_outlined : Icons.menu_book_outlined,
-                ),
+                icon: Icon(_groupBy == _GroupBy.testament ? Icons.category_outlined : Icons.menu_book_outlined),
                 onPressed: () => setState(() {
                   _groupBy = _groupBy == _GroupBy.testament ? _GroupBy.category : _GroupBy.testament;
                 }),
@@ -139,19 +135,24 @@ class _BookProgressScreenState extends State<BookProgressScreen> {
               }
               final sections = _sectionsFor(_applyFilter(snapshot.data!));
               if (sections.isEmpty) {
-                return EmptyState(
-                  icon: _nameQuery.trim().isNotEmpty ? Icons.search_off : Icons.menu_book_outlined,
-                  message: _nameQuery.trim().isNotEmpty
-                      ? 'Nenhum livro encontrado com esse nome.'
-                      : _readFilter == _ReadFilter.read
-                          ? 'Nenhum livro lido por completo ainda.'
-                          : 'Todos os livros já foram lidos!',
+                return SyncRefresh.fill(
+                  child: EmptyState(
+                    icon: _nameQuery.trim().isNotEmpty ? Icons.search_off : Icons.menu_book_outlined,
+                    message: _nameQuery.trim().isNotEmpty
+                        ? 'Nenhum livro encontrado com esse nome.'
+                        : _readFilter == _ReadFilter.read
+                        ? 'Nenhum livro lido por completo ainda.'
+                        : 'Todos os livros já foram lidos!',
+                  ),
                 );
               }
-              return ListView.separated(
-                itemCount: sections.length,
-                separatorBuilder: (context, i) => const Divider(height: 1),
-                itemBuilder: (context, i) => sections[i],
+              return SyncRefresh(
+                child: ListView.separated(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  itemCount: sections.length,
+                  separatorBuilder: (context, i) => const Divider(height: 1),
+                  itemBuilder: (context, i) => sections[i],
+                ),
               );
             },
           ),

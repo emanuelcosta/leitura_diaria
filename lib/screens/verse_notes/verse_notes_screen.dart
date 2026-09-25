@@ -11,6 +11,7 @@ import '../../widgets/empty_state.dart';
 import '../../widgets/note_sheet.dart';
 import '../notes/widgets/note_list_item.dart';
 import '../reading/chapter_reading_screen.dart';
+import '../../widgets/sync_refresh.dart';
 
 /// Lists every verse-level comment/note across the whole Bible — the
 /// verse-scoped counterpart to NotesListScreen (which lists chapter notes).
@@ -85,31 +86,37 @@ class _VerseNotesScreenState extends State<VerseNotesScreen> {
         final data = snapshot.data;
         if (data == null) return const Center(child: CircularProgressIndicator());
         if (data.notes.isEmpty) {
-          return const EmptyState(
-            icon: Icons.note_add_outlined,
-            message: 'Toque no ícone de nota abaixo de um versículo, na leitura\n'
-                'do capítulo, para comentar sobre ele.',
+          return const SyncRefresh.fill(
+            child: EmptyState(
+              icon: Icons.note_add_outlined,
+              message:
+                  'Toque no ícone de nota abaixo de um versículo, na leitura\n'
+                  'do capítulo, para comentar sobre ele.',
+            ),
           );
         }
         final books = {for (final b in data.books) b.id: b};
-        return ListView.separated(
-          itemCount: data.notes.length,
-          separatorBuilder: (context, i) => const Divider(height: 1),
-          itemBuilder: (context, i) {
-            final note = data.notes[i];
-            final book = books[note.bookId];
-            if (book == null) return const SizedBox.shrink();
-            final verse = data.verses[note.id];
-            return NoteListItem(
-              title: '${book.name} ${note.chapterNumber}:${note.verseNumber}',
-              verseText: verse,
-              note: note.note,
-              date: note.updatedAt,
-              books: data.books,
-              accent: NoteKind.verse.accent(Theme.of(context).colorScheme),
-              onTap: () => _open(provider, note, book, data.books, verse),
-            );
-          },
+        return SyncRefresh(
+          child: ListView.separated(
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: data.notes.length,
+            separatorBuilder: (context, i) => const Divider(height: 1),
+            itemBuilder: (context, i) {
+              final note = data.notes[i];
+              final book = books[note.bookId];
+              if (book == null) return const SizedBox.shrink();
+              final verse = data.verses[note.id];
+              return NoteListItem(
+                title: '${book.name} ${note.chapterNumber}:${note.verseNumber}',
+                verseText: verse,
+                note: note.note,
+                date: note.updatedAt,
+                books: data.books,
+                accent: NoteKind.verse.accent(Theme.of(context).colorScheme),
+                onTap: () => _open(provider, note, book, data.books, verse),
+              );
+            },
+          ),
         );
       },
     );

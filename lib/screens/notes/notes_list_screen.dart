@@ -5,6 +5,7 @@ import '../../data/database/queries.dart';
 import '../../state/reading_plan_provider.dart';
 import '../../widgets/empty_state.dart';
 import 'widgets/note_tile.dart';
+import '../../widgets/sync_refresh.dart';
 
 class NotesListScreen extends StatefulWidget {
   const NotesListScreen({super.key});
@@ -30,15 +31,20 @@ class _NotesListScreenState extends State<NotesListScreen> {
         }
         final notes = snapshot.data!;
         if (notes.isEmpty) {
-          return const EmptyState(
-            icon: Icons.sticky_note_2_outlined,
-            message: 'Suas anotações sobre os capítulos lidos vão aparecer aqui.',
+          return const SyncRefresh.fill(
+            child: EmptyState(
+              icon: Icons.sticky_note_2_outlined,
+              message: 'Suas anotações sobre os capítulos lidos vão aparecer aqui.',
+            ),
           );
         }
-        return ListView.separated(
-          itemCount: notes.length,
-          separatorBuilder: (_, _) => const Divider(height: 1),
-          itemBuilder: (context, i) => NoteTile(view: notes[i], books: plan.meta.books, onChanged: _refresh),
+        return SyncRefresh(
+          child: ListView.separated(
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: notes.length,
+            separatorBuilder: (_, _) => const Divider(height: 1),
+            itemBuilder: (context, i) => NoteTile(view: notes[i], books: plan.meta.books, onChanged: _refresh),
+          ),
         );
       },
     );

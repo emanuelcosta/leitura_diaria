@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../services/connectivity_service.dart';
 import '../../state/auth_provider.dart';
 import '../../state/sync_all.dart';
 import '../more/more_screen.dart';
@@ -28,11 +29,20 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   int _index = 0;
   final _searchFocus = FocusNode();
   DateTime? _lastResumeSync;
+  StreamSubscription<void>? _reconnectSub;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    // Back online with the app open: send what was done offline (deletions,
+    // failed pushes) right away. Skips the resume throttle — the previous
+    // attempt most likely failed for being offline. Plugin errors (e.g. no
+    // network manager on a Linux desktop) just leave this trigger off.
+    _reconnectSub = ConnectivityService().onReconnected.listen(
+      (_) => _backgroundSync(force: true),
+      onError: (_) {},
+    );
   }
 
   /// The startup/sign-in pull only runs when the app is launched fresh. On a
@@ -41,11 +51,14 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   /// parei" — until a restart or "Sincronizar agora".
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state != AppLifecycleState.resumed) return;
-    if (!context.read<AuthProvider>().isSignedIn) return;
+    if (state == AppLifecycleState.resumed) _backgroundSync();
+  }
+
+  void _backgroundSync({bool force = false}) {
+    if (!mounted || !context.read<AuthProvider>().isSignedIn) return;
     final now = DateTime.now();
     final last = _lastResumeSync;
-    if (last != null && now.difference(last) < _resumeSyncInterval) return;
+    if (!force && last != null && now.difference(last) < _resumeSyncInterval) return;
     _lastResumeSync = now;
     // Background pull: failures (offline, etc.) are swallowed on purpose,
     // same as the startup pull — "Sincronizar agora" is where errors show.
@@ -65,6 +78,7 @@ class _HomeShellState extends State<HomeShell> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _reconnectSub?.cancel();
     _searchFocus.dispose();
     super.dispose();
   }
