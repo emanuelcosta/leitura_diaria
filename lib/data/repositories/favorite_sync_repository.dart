@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../logic/remote_timestamp.dart';
+
 import '../models/favorite_verse.dart';
 
 /// Pushes/pulls favorited verses to the `favorite_verses` table in Supabase.
@@ -14,7 +16,7 @@ class FavoriteSyncRepository {
         'book_id': favorite.bookId,
         'chapter_number': favorite.chapterNumber,
         'verse_number': favorite.verseNumber,
-        'created_at': favorite.createdAt.toIso8601String(),
+        'created_at': toRemoteTimestamp(favorite.createdAt),
       };
 
   Future<void> push(FavoriteVerse favorite) async {
@@ -49,7 +51,7 @@ class FavoriteSyncRepository {
           bookId: r['book_id'] as String,
           chapterNumber: r['chapter_number'] as int,
           verseNumber: r['verse_number'] as int,
-          createdAt: DateTime.parse(r['created_at'] as String),
+          createdAt: DateTime.parse(r['created_at'] as String).toLocal(),
         )).toList();
   }
 }

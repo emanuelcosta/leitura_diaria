@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../logic/remote_timestamp.dart';
+
 import '../models/chapter.dart';
 
 typedef RemoteChapterProgress = ({
@@ -21,7 +23,7 @@ class SyncRepository {
         'book_id': chapter.bookId,
         'chapter_number': chapter.chapterNumber,
         'is_read': chapter.isRead,
-        'read_at': chapter.readAt?.toIso8601String(),
+        'read_at': chapter.readAt == null ? null : toRemoteTimestamp(chapter.readAt!),
         'note': chapter.note,
       };
 
@@ -63,7 +65,7 @@ class SyncRepository {
               bookId: r['book_id'] as String,
               chapterNumber: r['chapter_number'] as int,
               isRead: r['is_read'] as bool,
-              readAt: r['read_at'] == null ? null : DateTime.parse(r['read_at'] as String),
+              readAt: r['read_at'] == null ? null : DateTime.parse(r['read_at'] as String).toLocal(),
               note: r['note'] as String?,
             ))
         .toList();

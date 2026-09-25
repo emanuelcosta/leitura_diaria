@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../logic/remote_timestamp.dart';
+
 import '../models/reading_bookmark.dart';
 
 /// Mirrors the other Sync*Repository classes' pattern (RLS-scoped, no-ops
@@ -17,7 +19,7 @@ class BookmarkSyncRepository {
       'book_name': bookmark.bookName,
       'chapter_number': bookmark.chapterNumber,
       'verse_number': bookmark.verseNumber,
-      'saved_at': bookmark.savedAt.toIso8601String(),
+      'saved_at': toRemoteTimestamp(bookmark.savedAt),
     });
   }
 
@@ -39,7 +41,7 @@ class BookmarkSyncRepository {
       bookName: r['book_name'] as String,
       chapterNumber: r['chapter_number'] as int,
       verseNumber: r['verse_number'] as int?,
-      savedAt: DateTime.parse(r['saved_at'] as String),
+      savedAt: DateTime.parse(r['saved_at'] as String).toLocal(),
     );
   }
 }

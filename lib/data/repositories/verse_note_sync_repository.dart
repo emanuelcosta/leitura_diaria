@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../logic/remote_timestamp.dart';
+
 import '../models/verse_note.dart';
 
 /// Pushes/pulls verse notes to the `verse_notes` table in Supabase. Mirrors
@@ -14,7 +16,7 @@ class VerseNoteSyncRepository {
         'chapter_number': note.chapterNumber,
         'verse_number': note.verseNumber,
         'note': note.note,
-        'updated_at': note.updatedAt.toIso8601String(),
+        'updated_at': toRemoteTimestamp(note.updatedAt),
       };
 
   Future<void> push(VerseNote note) async {
@@ -51,7 +53,7 @@ class VerseNoteSyncRepository {
               chapterNumber: r['chapter_number'] as int,
               verseNumber: r['verse_number'] as int,
               note: r['note'] as String,
-              updatedAt: DateTime.parse(r['updated_at'] as String),
+              updatedAt: DateTime.parse(r['updated_at'] as String).toLocal(),
             ))
         .toList();
   }

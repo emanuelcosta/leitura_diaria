@@ -1,5 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../logic/remote_timestamp.dart';
+
 import '../models/doubt_verse.dart';
 
 /// Mirrors FavoriteSyncRepository's pattern (RLS-scoped, no-ops with nobody
@@ -13,7 +15,7 @@ class DoubtSyncRepository {
         'chapter_number': doubt.chapterNumber,
         'verse_number': doubt.verseNumber,
         'note': doubt.note,
-        'created_at': doubt.createdAt.toIso8601String(),
+        'created_at': toRemoteTimestamp(doubt.createdAt),
       };
 
   Future<void> push(DoubtVerse doubt) async {
@@ -50,7 +52,7 @@ class DoubtSyncRepository {
               chapterNumber: r['chapter_number'] as int,
               verseNumber: r['verse_number'] as int,
               note: r['note'] as String?,
-              createdAt: DateTime.parse(r['created_at'] as String),
+              createdAt: DateTime.parse(r['created_at'] as String).toLocal(),
             ))
         .toList();
   }
