@@ -17,6 +17,7 @@ class BookMentionTextField extends StatefulWidget {
   final TextEditingController controller;
   final List<Book> books;
   final InputDecoration? decoration;
+  final int? minLines;
   final int? maxLines;
   final bool autofocus;
   final VoidCallback? onEditingComplete;
@@ -27,6 +28,7 @@ class BookMentionTextField extends StatefulWidget {
     required this.controller,
     required this.books,
     this.decoration,
+    this.minLines,
     this.maxLines = 3,
     this.autofocus = false,
     this.onEditingComplete,
@@ -107,8 +109,10 @@ class _BookMentionTextFieldState extends State<BookMentionTextField> {
       children: [
         TextField(
           controller: widget.controller,
+          minLines: widget.minLines,
           maxLines: widget.maxLines,
           autofocus: widget.autofocus,
+          textCapitalization: TextCapitalization.sentences,
           decoration: widget.decoration,
           onEditingComplete: widget.onEditingComplete,
           onTapOutside: widget.onTapOutside,

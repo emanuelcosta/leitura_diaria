@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../logic/remote_timestamp.dart';
 
+import '../models/favorite_color.dart';
 import '../models/favorite_verse.dart';
 
 /// Pushes/pulls favorited verses to the `favorite_verses` table in Supabase.
@@ -16,7 +17,9 @@ class FavoriteSyncRepository {
         'book_id': favorite.bookId,
         'chapter_number': favorite.chapterNumber,
         'verse_number': favorite.verseNumber,
+        'color': favorite.color.name,
         'created_at': toRemoteTimestamp(favorite.createdAt),
+        'updated_at': toRemoteTimestamp(favorite.updatedAt),
       };
 
   Future<void> push(FavoriteVerse favorite) async {
@@ -47,11 +50,17 @@ class FavoriteSyncRepository {
     final userId = _client.auth.currentUser?.id;
     if (userId == null) return [];
     final rows = await _client.from('favorite_verses').select().eq('user_id', userId);
-    return rows.map((r) => FavoriteVerse(
-          bookId: r['book_id'] as String,
-          chapterNumber: r['chapter_number'] as int,
-          verseNumber: r['verse_number'] as int,
-          createdAt: DateTime.parse(r['created_at'] as String).toLocal(),
-        )).toList();
+    return rows.map((r) {
+      final createdAt = DateTime.parse(r['created_at'] as String).toLocal();
+      final updatedAt = r['updated_at'] as String?;
+      return FavoriteVerse(
+        bookId: r['book_id'] as String,
+        chapterNumber: r['chapter_number'] as int,
+        verseNumber: r['verse_number'] as int,
+        color: FavoriteColor.fromName(r['color'] as String?),
+        createdAt: createdAt,
+        updatedAt: updatedAt == null ? createdAt : DateTime.parse(updatedAt).toLocal(),
+      );
+    }).toList();
   }
 }

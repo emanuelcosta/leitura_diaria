@@ -55,7 +55,8 @@ class MoreScreen extends StatelessWidget {
         const SectionHeader(title: 'Ferramentas'),
         ListTile(
           leading: const Icon(Icons.star_outline),
-          title: const Text('Favoritos'),
+          title: const Text('Marcadores'),
+          subtitle: const Text('Versículos marcados por cor'),
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute(builder: (_) => const FavoritesScreen()),
           ),

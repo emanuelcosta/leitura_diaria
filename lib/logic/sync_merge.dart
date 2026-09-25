@@ -24,12 +24,24 @@ List<T> mergeById<T>(
   return merged.values.toList();
 }
 
-List<FavoriteVerse> mergeFavorites(List<FavoriteVerse> local, List<FavoriteVerse> remote) =>
-    mergeById(
+/// Most recently recolored wins the marker color; the earliest createdAt is
+/// kept (when the verse was first marked).
+List<FavoriteVerse> mergeFavorites(List<FavoriteVerse> local, List<FavoriteVerse> remote) => mergeById(
       local,
       remote,
       idOf: (f) => f.id,
-      resolve: (l, r) => l.createdAt.isAfter(r.createdAt) ? r : l,
+      resolve: (l, r) {
+        final newest = r.updatedAt.isAfter(l.updatedAt) ? r : l;
+        final earliest = l.createdAt.isAfter(r.createdAt) ? r.createdAt : l.createdAt;
+        return FavoriteVerse(
+          bookId: l.bookId,
+          chapterNumber: l.chapterNumber,
+          verseNumber: l.verseNumber,
+          color: newest.color,
+          createdAt: earliest,
+          updatedAt: newest.updatedAt,
+        );
+      },
     );
 
 /// Most recently edited note wins.

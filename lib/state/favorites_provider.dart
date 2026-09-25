@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../data/models/favorite_color.dart';
 import '../data/models/favorite_verse.dart';
 import '../data/repositories/favorite_sync_repository.dart';
 import '../data/repositories/favorite_verse_repository.dart';
@@ -14,7 +15,7 @@ class FavoritesProvider extends ChangeNotifier {
   final FavoriteSyncRepository? _syncRepo;
   StreamSubscription<AuthState>? _authSub;
 
-  Set<String> _favoriteIds = {};
+  Map<String, FavoriteColor> _colorsById = {};
   bool _loaded = false;
 
   FavoritesProvider({FavoriteVerseRepository? repo, FavoriteSyncRepository? syncRepo})
@@ -34,35 +35,37 @@ class FavoritesProvider extends ChangeNotifier {
   bool get loaded => _loaded;
 
   bool isFavorite(String bookId, int chapterNumber, int verseNumber) =>
-      _favoriteIds.contains('$bookId-$chapterNumber-$verseNumber');
+      _colorsById.containsKey('$bookId-$chapterNumber-$verseNumber');
+
+  /// The verse's marker color, or null if it isn't marked.
+  FavoriteColor? colorOf(String bookId, int chapterNumber, int verseNumber) =>
+      _colorsById['$bookId-$chapterNumber-$verseNumber'];
 
   Future<void> load() async {
     final favorites = await _repo.getAll();
-    _favoriteIds = favorites.map((f) => f.id).toSet();
+    _colorsById = {for (final f in favorites) f.id: f.color};
     _loaded = true;
     notifyListeners();
   }
 
   Future<List<FavoriteVerse>> getAll() => _repo.getAll();
 
-  Future<void> toggle(String bookId, int chapterNumber, int verseNumber) async {
-    if (isFavorite(bookId, chapterNumber, verseNumber)) {
-      await _repo.remove(bookId, chapterNumber, verseNumber);
-      _favoriteIds.remove('$bookId-$chapterNumber-$verseNumber');
-      notifyListeners();
-      unawaited(_syncRepo?.remove(bookId, chapterNumber, verseNumber).catchError((_) {}));
-    } else {
-      await _repo.add(bookId, chapterNumber, verseNumber);
-      _favoriteIds.add('$bookId-$chapterNumber-$verseNumber');
-      notifyListeners();
-      final favorite = FavoriteVerse(
-        bookId: bookId,
-        chapterNumber: chapterNumber,
-        verseNumber: verseNumber,
-        createdAt: DateTime.now(),
-      );
-      unawaited(_syncRepo?.push(favorite).catchError((_) {}));
-    }
+  /// Marks the verse with [color] (new favorite, or recolor of an existing
+  /// one). Pushing is fire-and-forget like every other sync write.
+  Future<void> setColor(String bookId, int chapterNumber, int verseNumber, FavoriteColor color) async {
+    final saved = await _repo.setColor(bookId, chapterNumber, verseNumber, color);
+    _colorsById[saved.id] = color;
+    notifyListeners();
+    // Failures swallowed on purpose (known gap, see CLAUDE.md): the next
+    // pull/merge reconciles.
+    unawaited(_syncRepo?.push(saved).catchError((_) {}));
+  }
+
+  Future<void> remove(String bookId, int chapterNumber, int verseNumber) async {
+    await _repo.remove(bookId, chapterNumber, verseNumber);
+    _colorsById.remove('$bookId-$chapterNumber-$verseNumber');
+    notifyListeners();
+    unawaited(_syncRepo?.remove(bookId, chapterNumber, verseNumber).catchError((_) {}));
   }
 
   Future<void> pullFromRemoteAndMerge() async {

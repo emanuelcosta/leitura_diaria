@@ -1,6 +1,7 @@
 import 'package:sqflite/sqflite.dart';
 
 import '../database/app_database.dart';
+import '../models/favorite_color.dart';
 import '../models/favorite_verse.dart';
 
 class FavoriteVerseRepository {
@@ -10,19 +11,25 @@ class FavoriteVerseRepository {
     return rows.map(FavoriteVerse.fromMap).toList();
   }
 
-  Future<void> add(String bookId, int chapterNumber, int verseNumber) async {
+  /// Marks the verse with [color] — creating the favorite, or recoloring an
+  /// existing one while keeping its original created_at. Returns the saved
+  /// row (for the sync push).
+  Future<FavoriteVerse> setColor(String bookId, int chapterNumber, int verseNumber, FavoriteColor color) async {
     final db = await AppDatabase.instance.database;
-    final favorite = FavoriteVerse(
-      bookId: bookId,
-      chapterNumber: chapterNumber,
-      verseNumber: verseNumber,
-      createdAt: DateTime.now(),
-    );
-    await db.insert(
-      'favorite_verses',
-      favorite.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    final now = DateTime.now();
+    final id = '$bookId-$chapterNumber-$verseNumber';
+    final existing = await db.query('favorite_verses', where: 'id = ?', whereArgs: [id]);
+    final favorite = existing.isEmpty
+        ? FavoriteVerse(
+            bookId: bookId,
+            chapterNumber: chapterNumber,
+            verseNumber: verseNumber,
+            color: color,
+            createdAt: now,
+          )
+        : FavoriteVerse.fromMap(existing.first).withColor(color, now);
+    await db.insert('favorite_verses', favorite.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+    return favorite;
   }
 
   Future<void> remove(String bookId, int chapterNumber, int verseNumber) async {

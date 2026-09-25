@@ -14,10 +14,10 @@ import '../../state/favorites_provider.dart';
 import '../../state/reading_plan_provider.dart';
 import '../../state/settings_provider.dart';
 import '../../state/verse_notes_provider.dart';
-import '../../widgets/book_mention_field.dart';
+import '../../widgets/marker_picker_sheet.dart';
+import '../../widgets/note_sheet.dart';
 import '../../widgets/reference_text.dart';
 import 'widgets/bible_reference_sheet.dart';
-import 'widgets/favorite_color_sheet.dart';
 import 'widgets/passage_picker_sheet.dart';
 
 /// Shared by every `ReferenceText` in the app (verse notes, doubt notes,
@@ -376,110 +376,74 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
     });
   }
 
-  Future<void> _editNote(int verseNumber, String? currentNote) async {
-    final notes = context.read<VerseNotesProvider>();
-    final books = context.read<ReadingPlanProvider>().meta.books;
-    final controller = TextEditingController(text: currentNote ?? '');
-    final result = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        // The @Sigla autocomplete dropdown can push content taller than the
-        // available height once the keyboard is up — scrollable lets the
-        // dialog scroll instead of overflowing.
-        scrollable: true,
-        title: Text('Nota — ${widget.bookName} ${widget.chapterNumber}:$verseNumber'),
-        content: BookMentionTextField(
-          controller: controller,
-          books: books,
-          maxLines: 4,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'O que chamou sua atenção nesse versículo?',
-            helperText: 'Dica: @Sigla cap vers linka outro texto (ex: @Jo 3 16)',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          if (currentNote != null && currentNote.isNotEmpty)
-            TextButton(
-              onPressed: () => Navigator.pop(context, ''),
-              style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
-              child: const Text('Remover'),
-            ),
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, controller.text),
-            child: const Text('Salvar'),
-          ),
-        ],
-      ),
+  /// The star opens the color picker: pick a color to mark (or recolor) the
+  /// verse, or remove the marker.
+  Future<void> _pickMarker(FavoritesProvider favorites, int verseNumber, FavoriteColor? current) async {
+    final choice = await showMarkerPicker(
+      context,
+      title: current == null
+          ? 'Marcar ${widget.bookName} ${widget.chapterNumber}:$verseNumber'
+          : 'Marcador de ${widget.bookName} ${widget.chapterNumber}:$verseNumber',
+      current: current,
     );
-    if (result != null) {
-      await notes.setNote(widget.bookId, widget.chapterNumber, verseNumber, result);
+    if (choice == null) return;
+    final color = choice.color;
+    if (color == null) {
+      await favorites.remove(widget.bookId, widget.chapterNumber, verseNumber);
+    } else if (color != current) {
+      await favorites.setColor(widget.bookId, widget.chapterNumber, verseNumber, color);
     }
   }
 
-  /// Marking a verse as a doubt always goes through this dialog (instead of
-  /// a plain toggle) so there's a chance to jot down *why* — what was
-  /// confusing — right at the moment, not relying on memory later. Already
-  /// marked + no text change just edits the note; the "Remover" button is
-  /// the only way to unmark. Uses a (remove, text) record rather than a
-  /// plain String result so clearing the note and hitting "Salvar" can't be
-  /// confused with tapping "Remover dúvida" — both would otherwise produce
-  /// the same empty string.
-  Future<void> _editDoubt(int verseNumber, {required bool isDoubt, String? currentNote}) async {
-    final doubts = context.read<DoubtsProvider>();
-    final books = context.read<ReadingPlanProvider>().meta.books;
-    final controller = TextEditingController(text: currentNote ?? '');
-    final result = await showDialog<({bool remove, String text})>(
-      context: context,
-      builder: (context) => AlertDialog(
-        scrollable: true,
-        title: Text('Dúvida — ${widget.bookName} ${widget.chapterNumber}:$verseNumber'),
-        content: BookMentionTextField(
-          controller: controller,
-          books: books,
-          maxLines: 4,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'O que você não entendeu? (opcional, ajuda a lembrar depois)',
-            helperText: 'Dica: @Sigla cap vers linka outro texto (ex: @Jo 3 16)',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          if (isDoubt)
-            TextButton(
-              onPressed: () => Navigator.pop(context, (remove: true, text: '')),
-              style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
-              child: const Text('Remover dúvida'),
-            ),
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, (remove: false, text: controller.text)),
-            child: Text(isDoubt ? 'Salvar' : 'Marcar dúvida'),
-          ),
-        ],
-      ),
+  String? _verseText(int verseNumber) {
+    final verses = _verses;
+    return verses != null && verseNumber >= 1 && verseNumber <= verses.length ? verses[verseNumber - 1] : null;
+  }
+
+  /// Opens the note sheet straight in the editor (the comment itself keeps
+  /// showing inline under the verse, as before). Saving empty text removes
+  /// the note (VerseNotesProvider.setNote).
+  Future<void> _editNote(int verseNumber, String? currentNote) {
+    final notes = context.read<VerseNotesProvider>();
+    final hasNote = currentNote != null && currentNote.isNotEmpty;
+    return showNoteSheet(
+      context,
+      title: '${widget.bookName} ${widget.chapterNumber}:$verseNumber',
+      kind: NoteKind.verse,
+      books: context.read<ReadingPlanProvider>().meta.books,
+      onReferenceTap: previewBibleReference,
+      initialText: currentNote ?? '',
+      verseText: Future.value(_verseText(verseNumber)),
+      startEditing: true,
+      closeOnSave: true,
+      onSave: (text) => notes.setNote(widget.bookId, widget.chapterNumber, verseNumber, text),
+      onDelete: hasNote ? () => notes.setNote(widget.bookId, widget.chapterNumber, verseNumber, '') : null,
     );
-    if (result == null) return;
-    if (result.remove) {
-      await doubts.unmark(widget.bookId, widget.chapterNumber, verseNumber);
-    } else if (isDoubt) {
-      await doubts.updateNote(
-        widget.bookId,
-        widget.chapterNumber,
-        verseNumber,
-        result.text.isEmpty ? null : result.text,
-      );
-    } else {
-      await doubts.mark(
-        widget.bookId,
-        widget.chapterNumber,
-        verseNumber,
-        note: result.text.isEmpty ? null : result.text,
-      );
-    }
+  }
+
+  /// Marking a verse as a doubt always goes through the note sheet (instead
+  /// of a plain toggle) so there's a chance to jot down *why* — what was
+  /// confusing — right at the moment, not relying on memory later. Saving
+  /// with an empty comment still marks/keeps the doubt; "Remover dúvida" is
+  /// the only way to unmark.
+  Future<void> _editDoubt(int verseNumber, {required bool isDoubt, String? currentNote}) {
+    final doubts = context.read<DoubtsProvider>();
+    return showNoteSheet(
+      context,
+      title: '${widget.bookName} ${widget.chapterNumber}:$verseNumber',
+      kind: NoteKind.doubt,
+      books: context.read<ReadingPlanProvider>().meta.books,
+      onReferenceTap: previewBibleReference,
+      initialText: currentNote ?? '',
+      verseText: Future.value(_verseText(verseNumber)),
+      startEditing: true,
+      closeOnSave: true,
+      saveLabel: isDoubt ? 'Salvar' : 'Marcar dúvida',
+      onSave: (text) => isDoubt
+          ? doubts.updateNote(widget.bookId, widget.chapterNumber, verseNumber, text.isEmpty ? null : text)
+          : doubts.mark(widget.bookId, widget.chapterNumber, verseNumber, note: text.isEmpty ? null : text),
+      onDelete: isDoubt ? () => doubts.unmark(widget.bookId, widget.chapterNumber, verseNumber) : null,
+    );
   }
 
   /// Same contextual-toolbar slot the multi-select copy button uses — a
@@ -489,10 +453,9 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
     FavoritesProvider favorites,
     VerseNotesProvider notes,
     DoubtsProvider doubts,
-    FavoriteColor favoriteColor,
   ) {
     final verseNumber = _selectedVerse!;
-    final isFavorite = favorites.isFavorite(widget.bookId, widget.chapterNumber, verseNumber);
+    final markerColor = favorites.colorOf(widget.bookId, widget.chapterNumber, verseNumber);
     final isDoubt = doubts.isDoubt(widget.bookId, widget.chapterNumber, verseNumber);
     final doubtNote = doubts.noteFor(widget.bookId, widget.chapterNumber, verseNumber);
     final note = notes.noteFor(widget.bookId, widget.chapterNumber, verseNumber);
@@ -513,11 +476,11 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
       actions: [
         IconButton(
           icon: Icon(
-            isFavorite ? Icons.star : Icons.star_border,
-            color: isFavorite ? favoriteColor.color : null,
+            markerColor != null ? Icons.star : Icons.star_border,
+            color: markerColor?.color,
           ),
-          tooltip: isFavorite ? 'Remover dos favoritos' : 'Favoritar versículo',
-          onPressed: () => favorites.toggle(widget.bookId, widget.chapterNumber, verseNumber),
+          tooltip: markerColor != null ? 'Trocar cor ou remover marcador' : 'Marcar versículo',
+          onPressed: () => _pickMarker(favorites, verseNumber, markerColor),
         ),
         IconButton(
           icon: Icon(isDoubt ? Icons.help : Icons.help_outline),
@@ -598,11 +561,6 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.palette_outlined, color: settings.favoriteColor.color),
-          tooltip: 'Cor dos favoritos',
-          onPressed: () => showFavoriteColorSheet(context),
-        ),
-        IconButton(
           icon: const Icon(Icons.text_decrease),
           tooltip: 'Diminuir fonte',
           onPressed: settings.fontScale <= minFontScale ? null : settings.decreaseFontScale,
@@ -646,7 +604,7 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
       appBar: _multiSelectMode
           ? _buildMultiSelectAppBar()
           : _selectedVerse != null
-              ? _buildSelectedVerseAppBar(favorites, notes, doubts, settings.favoriteColor)
+              ? _buildSelectedVerseAppBar(favorites, notes, doubts)
               : _buildDefaultAppBar(settings, books),
       body: verses == null
           ? const Center(child: CircularProgressIndicator())
@@ -711,7 +669,7 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
                   }
 
                   final verseNumber = i + 1;
-                  final isFavorite = favorites.isFavorite(widget.bookId, widget.chapterNumber, verseNumber);
+                  final markerColor = favorites.colorOf(widget.bookId, widget.chapterNumber, verseNumber);
                   final isDoubt = doubts.isDoubt(widget.bookId, widget.chapterNumber, verseNumber);
                   final note = notes.noteFor(widget.bookId, widget.chapterNumber, verseNumber);
                   final isMultiSelected = _multiSelected.contains(verseNumber);
@@ -722,7 +680,7 @@ class _ChapterReadingScreenState extends State<ChapterReadingScreen> {
                   // pending-research verses stay easy to spot while reading.
                   Color? highlight() {
                     if (isDoubt) return Colors.deepPurple.withValues(alpha: 0.12);
-                    if (isFavorite) return settings.favoriteColor.highlight;
+                    if (markerColor != null) return markerColor.highlight;
                     return null;
                   }
 

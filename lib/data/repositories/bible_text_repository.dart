@@ -71,6 +71,21 @@ class BibleTextRepository {
     return (chapters[chapterNumber - 1] as List<dynamic>).cast<String>();
   }
 
+  /// One verse's text, or null if that verse doesn't exist in the chapter.
+  Future<String?> getVerse({
+    required BibleTranslation translation,
+    required int bookOrder,
+    required int chapterNumber,
+    required int verseNumber,
+  }) async {
+    final verses = await getChapterVerses(
+      translation: translation,
+      bookOrder: bookOrder,
+      chapterNumber: chapterNumber,
+    );
+    return verseNumber >= 1 && verseNumber <= verses.length ? verses[verseNumber - 1] : null;
+  }
+
   /// Verse count per chapter: `counts[bookOrder - 1][chapterNumber - 1]`.
   /// Counts differ slightly between translations (ACF 31102, ARC 31105).
   Future<List<List<int>>> getVerseCounts(BibleTranslation translation) async {

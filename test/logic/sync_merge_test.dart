@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leitura_diaria/data/models/doubt_verse.dart';
+import 'package:leitura_diaria/data/models/favorite_color.dart';
 import 'package:leitura_diaria/data/models/favorite_verse.dart';
 import 'package:leitura_diaria/data/models/verse_note.dart';
 import 'package:leitura_diaria/logic/sync_merge.dart';
@@ -38,6 +39,19 @@ void main() {
   test('favorites: same verse on both sides keeps earliest createdAt', () {
     final merged = mergeFavorites([_fav(1, feb)], [_fav(1, jan)]);
     expect(merged.single.createdAt, jan);
+  });
+
+  test('favorites: most recently recolored wins the color, whichever side it is on', () {
+    final mar = DateTime(2026, 3, 1);
+    FavoriteVerse colored(FavoriteColor c, DateTime updated) => FavoriteVerse(
+        bookId: 'GEN', chapterNumber: 1, verseNumber: 1, color: c, createdAt: jan, updatedAt: updated);
+
+    final remoteNewer = mergeFavorites([colored(FavoriteColor.amber, feb)], [colored(FavoriteColor.green, mar)]);
+    expect(remoteNewer.single.color, FavoriteColor.green);
+    expect(remoteNewer.single.updatedAt, mar);
+
+    final localNewer = mergeFavorites([colored(FavoriteColor.pink, mar)], [colored(FavoriteColor.green, feb)]);
+    expect(localNewer.single.color, FavoriteColor.pink);
   });
 
   test('notes: most recently edited wins, whichever side it is on', () {

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
@@ -41,9 +42,10 @@ class AppDatabase {
     final path = p.join(dbPath, _fileName);
     return openDatabase(
       path,
-      version: 5,
+      version: 6,
       onCreate: (db, version) => createSchema(db),
       onUpgrade: (db, oldVersion, newVersion) async {
+        // Each step is additive (CREATE/ALTER), never DROP — see CLAUDE.md.
         if (oldVersion < 2) {
           await _createFavoriteVerses(db);
         }
@@ -55,6 +57,9 @@ class AppDatabase {
         }
         if (oldVersion < 5) {
           await db.execute('ALTER TABLE doubt_verses ADD COLUMN note TEXT');
+        }
+        if (oldVersion < 6) {
+          await addFavoriteColor(db);
         }
       },
     );
@@ -89,8 +94,19 @@ class AppDatabase {
       'CREATE INDEX idx_chapters_read_at ON chapters(read_at) WHERE is_read = 1',
     );
     await _createFavoriteVerses(db);
+    await addFavoriteColor(db);
     await _createVerseNotes(db);
     await _createDoubtVerses(db);
+  }
+
+  /// v6: each favorite gets its own marker color (existing ones become amber,
+  /// the single color used until then) and an updated_at for newest-wins
+  /// sync of color changes (backfilled from created_at).
+  @visibleForTesting
+  static Future<void> addFavoriteColor(Database db) async {
+    await db.execute("ALTER TABLE favorite_verses ADD COLUMN color TEXT NOT NULL DEFAULT 'amber'");
+    await db.execute('ALTER TABLE favorite_verses ADD COLUMN updated_at TEXT');
+    await db.execute('UPDATE favorite_verses SET updated_at = created_at WHERE updated_at IS NULL');
   }
 
   static Future<void> _createFavoriteVerses(Database db) async {

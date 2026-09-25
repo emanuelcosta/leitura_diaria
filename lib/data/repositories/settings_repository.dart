@@ -17,7 +17,7 @@ class SettingsRepository {
   static const _keyFontScale = 'font_scale';
   static const _keyTranslationLanguage = 'translation_language';
   static const _keyProgressMode = 'progress_mode';
-  static const _keyFavoriteColor = 'favorite_color';
+  static const _keyMarkerNamePrefix = 'marker_name_';
 
   Future<DateTime?> getStartDate() async {
     final prefs = await SharedPreferences.getInstance();
@@ -129,14 +129,24 @@ class SettingsRepository {
     await prefs.setString(_keyProgressMode, mode.name);
   }
 
-  Future<FavoriteColor> getFavoriteColor() async {
+  /// User-chosen name per marker color (e.g. amber → "Promessas"). Colors
+  /// the user hasn't renamed are absent — callers fall back to the color's
+  /// own label.
+  Future<Map<FavoriteColor, String>> getMarkerNames() async {
     final prefs = await SharedPreferences.getInstance();
-    final name = prefs.getString(_keyFavoriteColor);
-    return FavoriteColor.values.firstWhere((c) => c.name == name, orElse: () => FavoriteColor.amber);
+    return {
+      for (final c in FavoriteColor.values) c: ?prefs.getString('$_keyMarkerNamePrefix${c.name}'),
+    };
   }
 
-  Future<void> setFavoriteColor(FavoriteColor color) async {
+  /// Empty [name] resets the color to its default label.
+  Future<void> setMarkerName(FavoriteColor color, String name) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyFavoriteColor, color.name);
+    final key = '$_keyMarkerNamePrefix${color.name}';
+    if (name.trim().isEmpty) {
+      await prefs.remove(key);
+    } else {
+      await prefs.setString(key, name.trim());
+    }
   }
 }

@@ -9,6 +9,7 @@ import '../../state/reading_plan_provider.dart';
 import '../../state/settings_provider.dart';
 import '../../widgets/confirm_dialog.dart';
 import '../../widgets/section_header.dart';
+import 'widgets/marker_names_section.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -155,6 +156,7 @@ class SettingsScreen extends StatelessWidget {
               },
             ),
           ),
+          const MarkerNamesSection(),
           const SectionHeader(title: 'Notificações'),
           SwitchListTile(
             secondary: const Icon(Icons.notifications_outlined),

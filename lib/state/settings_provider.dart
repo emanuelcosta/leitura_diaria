@@ -28,7 +28,7 @@ class SettingsProvider extends ChangeNotifier {
   double _fontScale = 1.0;
   TranslationLanguage _translationLanguage = TranslationLanguage.pt;
   ProgressMode _progressMode = ProgressMode.chapters;
-  FavoriteColor _favoriteColor = FavoriteColor.amber;
+  Map<FavoriteColor, String> _markerNames = const {};
   bool _loaded = false;
 
   DateTime? get startDate => _startDate;
@@ -40,7 +40,12 @@ class SettingsProvider extends ChangeNotifier {
   double get fontScale => _fontScale;
   TranslationLanguage get translationLanguage => _translationLanguage;
   ProgressMode get progressMode => _progressMode;
-  FavoriteColor get favoriteColor => _favoriteColor;
+  /// What a marker color means to the user ("Promessas"), or the color's
+  /// own name ("Amarelo") if not renamed.
+  String markerName(FavoriteColor color) => _markerNames[color] ?? color.label;
+
+  /// Whether the user gave this color a name of their own.
+  bool isMarkerRenamed(FavoriteColor color) => _markerNames.containsKey(color);
   bool get loaded => _loaded;
   bool get hasStarted => _startDate != null;
 
@@ -55,7 +60,7 @@ class SettingsProvider extends ChangeNotifier {
     _fontScale = await _repo.getFontScale();
     _translationLanguage = await _repo.getTranslationLanguage();
     _progressMode = await _repo.getProgressMode();
-    _favoriteColor = await _repo.getFavoriteColor();
+    _markerNames = await _repo.getMarkerNames();
     _loaded = true;
     notifyListeners();
   }
@@ -66,9 +71,10 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> setFavoriteColor(FavoriteColor color) async {
-    await _repo.setFavoriteColor(color);
-    _favoriteColor = color;
+  /// Empty [name] goes back to the color's default name.
+  Future<void> setMarkerName(FavoriteColor color, String name) async {
+    await _repo.setMarkerName(color, name);
+    _markerNames = await _repo.getMarkerNames();
     notifyListeners();
   }
 
