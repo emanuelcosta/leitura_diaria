@@ -34,7 +34,8 @@ class MoreScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = context.watch<AuthProvider>();
+    final user = context.watch<AuthProvider>().user;
+    final isSignedIn = user != null;
     return ListView(
       children: [
         const SectionHeader(title: 'Conta'),
@@ -42,16 +43,16 @@ class MoreScreen extends StatelessWidget {
           leading: const Icon(Icons.cloud_outlined),
           title: const Text('Conta'),
           subtitle: Text(
-            auth.isSignedIn
-                ? 'Sincronizado como ${auth.user!.email}'
+            isSignedIn
+                ? 'Sincronizado como ${user.email}'
                 : 'Entrar para sincronizar entre aparelhos',
           ),
-          trailing: auth.isSignedIn
+          trailing: isSignedIn
               ? TextButton(onPressed: () => _signOut(context), child: const Text('Sair'))
               : null,
-          onTap: auth.isSignedIn ? null : () => showAuthDialog(context),
+          onTap: isSignedIn ? null : () => showAuthDialog(context),
         ),
-        if (auth.isSignedIn) const SyncNowTile(),
+        if (isSignedIn) const SyncNowTile(),
         const SectionHeader(title: 'Ferramentas'),
         ListTile(
           leading: const Icon(Icons.star_outline),
