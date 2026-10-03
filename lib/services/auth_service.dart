@@ -7,6 +7,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// throws a friendly [AuthException] instead of Supabase's own
 /// "not initialized" assertion error.
 class AuthService {
+  static bool _initialized = false;
+
   /// Must match the scheme+host registered in AndroidManifest.xml
   /// (intent-filter) and Info.plist (CFBundleURLTypes), and must also be
   /// added to Supabase Dashboard > Authentication > URL Configuration >
@@ -14,13 +16,7 @@ class AuthService {
   static const emailRedirectTo = 'com.emanuel.leituradiaria://login-callback';
 
   bool get _ready {
-    try {
-      // Throws if Supabase.initialize() was never called.
-      Supabase.instance;
-      return true;
-    } catch (_) {
-      return false;
-    }
+    return _initialized;
   }
 
   SupabaseClient get _client => Supabase.instance.client;
@@ -34,7 +30,9 @@ class AuthService {
       (state.event == AuthChangeEvent.initialSession && state.session != null);
 
   static Future<void> init({required String url, required String publishableKey}) {
-    return Supabase.initialize(url: url, publishableKey: publishableKey);
+    return Supabase.initialize(url: url, publishableKey: publishableKey).then((_) {
+      _initialized = true;
+    });
   }
 
   User? get currentUser => _ready ? _client.auth.currentUser : null;
