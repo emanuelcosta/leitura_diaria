@@ -28,6 +28,8 @@ class SettingsProvider extends ChangeNotifier {
   double _fontScale = 1.0;
   TranslationLanguage _translationLanguage = TranslationLanguage.pt;
   ProgressMode _progressMode = ProgressMode.chapters;
+  int _readingDurationDays = 365;
+  DateTime? _readingEndDate;
   Map<FavoriteColor, String> _markerNames = const {};
   bool _loaded = false;
 
@@ -40,6 +42,8 @@ class SettingsProvider extends ChangeNotifier {
   double get fontScale => _fontScale;
   TranslationLanguage get translationLanguage => _translationLanguage;
   ProgressMode get progressMode => _progressMode;
+  int get readingDurationDays => _readingDurationDays;
+  DateTime? get readingEndDate => _readingEndDate;
   /// What a marker color means to the user ("Promessas"), or the color's
   /// own name ("Amarelo") if not renamed.
   String markerName(FavoriteColor color) => _markerNames[color] ?? color.label;
@@ -60,6 +64,14 @@ class SettingsProvider extends ChangeNotifier {
     _fontScale = await _repo.getFontScale();
     _translationLanguage = await _repo.getTranslationLanguage();
     _progressMode = await _repo.getProgressMode();
+    _readingDurationDays = await _repo.getReadingDurationDays();
+    _readingEndDate = await _repo.getReadingEndDate();
+    if (_readingEndDate == null && _startDate != null) {
+      _readingEndDate = _startDate!.add(Duration(days: _readingDurationDays - 1));
+    }
+    if (_readingEndDate != null && _startDate != null && _readingEndDate!.isBefore(_startDate!)) {
+      _readingEndDate = _startDate;
+    }
     _markerNames = await _repo.getMarkerNames();
     _loaded = true;
     notifyListeners();
@@ -81,6 +93,29 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setProgressMode(ProgressMode mode) async {
     await _repo.setProgressMode(mode);
     _progressMode = mode;
+    notifyListeners();
+  }
+
+  Future<void> setReadingDurationDays(int days) async {
+    if (days < 1) return;
+    await _repo.setReadingDurationDays(days);
+    _readingDurationDays = days;
+    if (_startDate != null) {
+      _readingEndDate = _startDate!.add(Duration(days: days - 1));
+      await _repo.setReadingEndDate(_readingEndDate!);
+    }
+    notifyListeners();
+  }
+
+  Future<void> setReadingEndDate(DateTime date) async {
+    final dateOnly = DateTime(date.year, date.month, date.day);
+    if (_startDate != null && dateOnly.isBefore(_startDate!)) return;
+    await _repo.setReadingEndDate(dateOnly);
+    _readingEndDate = dateOnly;
+    if (_startDate != null) {
+      _readingDurationDays = dateOnly.difference(_startDate!).inDays + 1;
+      await _repo.setReadingDurationDays(_readingDurationDays);
+    }
     notifyListeners();
   }
 
@@ -110,6 +145,13 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> setStartDate(DateTime date) async {
     await _repo.setStartDate(date);
     _startDate = DateTime(date.year, date.month, date.day);
+    if (_readingEndDate == null || _readingEndDate!.isBefore(_startDate!)) {
+      _readingEndDate = _startDate!.add(Duration(days: _readingDurationDays - 1));
+      await _repo.setReadingEndDate(_readingEndDate!);
+    } else {
+      _readingDurationDays = _readingEndDate!.difference(_startDate!).inDays + 1;
+      await _repo.setReadingDurationDays(_readingDurationDays);
+    }
     notifyListeners();
   }
 

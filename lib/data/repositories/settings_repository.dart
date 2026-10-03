@@ -17,6 +17,8 @@ class SettingsRepository {
   static const _keyFontScale = 'font_scale';
   static const _keyTranslationLanguage = 'translation_language';
   static const _keyProgressMode = 'progress_mode';
+  static const _keyReadingDurationDays = 'reading_duration_days';
+  static const _keyReadingEndDate = 'reading_end_date';
   static const _keyMarkerNamePrefix = 'marker_name_';
 
   Future<DateTime?> getStartDate() async {
@@ -127,6 +129,28 @@ class SettingsRepository {
   Future<void> setProgressMode(ProgressMode mode) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyProgressMode, mode.name);
+  }
+
+  Future<int> getReadingDurationDays() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getInt(_keyReadingDurationDays) ?? 365;
+  }
+
+  Future<void> setReadingDurationDays(int days) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_keyReadingDurationDays, days);
+  }
+
+  Future<DateTime?> getReadingEndDate() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString(_keyReadingEndDate);
+    return value == null ? null : DateTime.parse(value);
+  }
+
+  Future<void> setReadingEndDate(DateTime date) async {
+    final prefs = await SharedPreferences.getInstance();
+    final dateOnly = DateTime(date.year, date.month, date.day);
+    await prefs.setString(_keyReadingEndDate, dateOnly.toIso8601String());
   }
 
   /// User-chosen name per marker color (e.g. amber → "Promessas"). Colors

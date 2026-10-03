@@ -33,20 +33,33 @@ chamado por `ReadingPlanProvider.computeScheduleStatus` e exibido em
 4. **Adiantado/atrasado** (`daysAheadBehind`): `achievedPlanDay -
    idealPlanDay`. Positivo = à frente, negativo = atrás, 0 = em dia. É esse
    número que define a cor/ícone do card (verde/laranja/neutro).
-5. **Previsão de conclusão** (`projectedFinishDate`): só é calculada se pelo
-   menos 1 capítulo já foi lido. É uma **média linear simples desde o
-   início**, não uma média móvel recente:
+5. **Meta diária e previsão de conclusão** (`requiredUnitsPerDay` e
+   `projectedFinishDate`): a previsão usa o prazo configurado, em vez de
+   extrapolar uma média histórica:
    ```
-   diasDecorridos = (hoje − início) + 1
-   médiaPorDia    = capítulosLidos / diasDecorridos
-   faltam         = 1189 − capítulosLidos
-   diasRestantes  = ceil(faltam / médiaPorDia)
-   previsão       = hoje + diasRestantes dias
+   dataAlvo        = início + prazoEmDias − 1
+   diasDisponíveis = max(1, dataAlvo − hoje + 1)
+   faltam          = totalDeUnidades − unidadesLidas
+   metaPorDia      = ceil(faltam / diasDisponíveis)
+   previsão        = hoje + ceil(faltam / metaPorDia) dias
    ```
-   Isso significa que um começo rápido (ou lento) segue puxando a média por
-   muito tempo — a previsão reage devagar a uma mudança recente de ritmo. Não
-   é um bug, é uma limitação de design conhecida: dá pra trocar por uma
-   média das últimas N semanas se isso incomodar na prática.
+   A unidade é capítulo ou versículo conforme o modo de progresso selecionado.
+   Como a divisão é arredondada para cima, a meta nunca fica abaixo do
+   necessário para cumprir o prazo.
+
+6. **Previsão pelo histórico** (`historicalProjectedFinishDate`): é calculada
+   usando a **mediana** da quantidade de capítulos dos dias em que houve
+   pelo menos um capítulo lido:
+   ```
+   ritmoTípico = mediana(capítulosLidosEmCadaDiaAtivo)
+   previsãoHistórica = hoje + ceil(capítulosRestantes / ritmoTípico)
+   ```
+   A mediana reduz o impacto de um dia atípico, como marcar muitos livros de
+   uma vez no primeiro dia. Essa é a previsão principal pelo ritmo observado.
+   O card também mostra
+   `calendarProjectedFinishDate`, uma estimativa conservadora que divide os
+   capítulos lidos por todos os dias desde o início, incluindo dias sem
+   leitura. Quando nenhum capítulo foi lido, as duas previsões não são exibidas.
 
 ## Detalhe não-óbvio corrigido nesta revisão
 

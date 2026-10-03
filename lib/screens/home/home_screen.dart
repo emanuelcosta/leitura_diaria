@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../data/database/queries.dart';
+import '../../logic/schedule_calculator.dart';
 import '../../logic/streak_calculator.dart';
 import '../../state/bookmark_provider.dart';
 import '../../state/doubts_provider.dart';
@@ -132,22 +133,45 @@ class _HomeScreenState extends State<HomeScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: progress.totalCount > 0 && progress.readCount >= progress.totalCount
-                    // Only the completed state needs lastReadAt (for "Concluído
-                    // em DD/MM/AAAA"), so only fetch it once the plan is
-                    // actually done — no point querying MAX(read_at) on every
-                    // build.
                     ? FutureBuilder<DateTime?>(
                         future: plan.getLastReadAt(),
-                        builder: (context, snapshot) => ScheduleStatusCard(
-                          status: plan.computeScheduleStatus(
+                        builder: (context, snapshot) => FutureBuilder<ScheduleStatus>(
+                          future: plan.computeScheduleStatusForProgress(
                             startDate: startDate,
                             today: DateTime.now(),
+                            mode: settings.progressMode,
+                            translation: settings.translation,
+                            targetDurationDays: settings.readingDurationDays,
                             lastReadAt: snapshot.data,
+                          ),
+                          builder: (context, statusSnapshot) => ScheduleStatusCard(
+                            status: statusSnapshot.data ??
+                                plan.computeScheduleStatus(
+                                  startDate: startDate,
+                                  today: DateTime.now(),
+                                  targetDurationDays: settings.readingDurationDays,
+                                ),
+                            unit: settings.progressMode.unit,
                           ),
                         ),
                       )
-                    : ScheduleStatusCard(
-                        status: plan.computeScheduleStatus(startDate: startDate, today: DateTime.now()),
+                    : FutureBuilder<ScheduleStatus>(
+                        future: plan.computeScheduleStatusForProgress(
+                          startDate: startDate,
+                          today: DateTime.now(),
+                          mode: settings.progressMode,
+                          translation: settings.translation,
+                          targetDurationDays: settings.readingDurationDays,
+                        ),
+                        builder: (context, snapshot) => ScheduleStatusCard(
+                          status: snapshot.data ??
+                              plan.computeScheduleStatus(
+                                startDate: startDate,
+                                today: DateTime.now(),
+                                targetDurationDays: settings.readingDurationDays,
+                              ),
+                          unit: settings.progressMode.unit,
+                        ),
                       ),
               ),
             ],

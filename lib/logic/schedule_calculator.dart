@@ -11,6 +11,15 @@ class ScheduleStatus {
   final bool completed;
   final DateTime? projectedFinishDate;
   final DateTime? completionDate;
+  final int remainingUnits;
+  final int requiredUnitsPerDay;
+  final int targetDurationDays;
+  /// Median chapters read on an active day, which is resistant to bulk
+  /// marking on an unusually productive day.
+  final double? historicalChaptersPerDay;
+  final DateTime? historicalProjectedFinishDate;
+  final double? calendarChaptersPerDay;
+  final DateTime? calendarProjectedFinishDate;
 
   const ScheduleStatus({
     required this.idealPlanDay,
@@ -19,6 +28,13 @@ class ScheduleStatus {
     required this.completed,
     this.projectedFinishDate,
     this.completionDate,
+    this.remainingUnits = 0,
+    this.requiredUnitsPerDay = 0,
+    this.targetDurationDays = 365,
+    this.historicalChaptersPerDay,
+    this.historicalProjectedFinishDate,
+    this.calendarChaptersPerDay,
+    this.calendarProjectedFinishDate,
   });
 }
 
@@ -43,9 +59,18 @@ class ScheduleCalculator {
     required DateTime today,
     required int actualReadCount,
     DateTime? lastReadAt,
+    int targetDurationDays = 365,
+    int? historicalReadCount,
+    int? historicalTotalCount,
+    int? activeReadingDays,
+    List<int>? historicalDailyCounts,
   }) {
+    if (targetDurationDays < 1) {
+      throw ArgumentError.value(targetDurationDays, 'targetDurationDays', 'must be positive');
+    }
     final daysSinceStart = today.difference(startDate).inDays;
-    final idealPlanDay = _clamp(daysSinceStart + 1, 1, totalPlanDays);
+    final idealDayLimit = targetDurationDays == 365 ? totalPlanDays : targetDurationDays;
+    final idealPlanDay = _clamp(daysSinceStart + 1, 1, idealDayLimit);
 
     if (actualReadCount >= totalChapters) {
       return ScheduleStatus(
@@ -54,6 +79,7 @@ class ScheduleCalculator {
         daysAheadBehind: 0,
         completed: true,
         completionDate: lastReadAt,
+        targetDurationDays: targetDurationDays,
       );
     }
 
@@ -70,14 +96,30 @@ class ScheduleCalculator {
 
     final daysAheadBehind = achievedPlanDay - idealPlanDay;
 
-    DateTime? projectedFinish;
-    final daysElapsed = daysSinceStart + 1;
-    if (daysElapsed > 0 && actualReadCount > 0) {
-      final avgPerDay = actualReadCount / daysElapsed;
-      final remaining = totalChapters - actualReadCount;
-      final daysRemaining = (remaining / avgPerDay).ceil();
-      projectedFinish = today.add(Duration(days: daysRemaining));
-    }
+    final remaining = totalChapters - actualReadCount;
+    final historicalCount = historicalReadCount ?? actualReadCount;
+    final historicalTotal = historicalTotalCount ?? totalChapters;
+    final elapsedDays = daysSinceStart + 1;
+    final activeDays = activeReadingDays ?? elapsedDays;
+    final historicalAverage = historicalDailyCounts != null && historicalDailyCounts.isNotEmpty
+        ? _median(historicalDailyCounts)
+        : activeDays > 0 && historicalCount > 0
+            ? historicalCount / activeDays
+            : null;
+    final calendarAverage = elapsedDays > 0 && historicalCount > 0 ? historicalCount / elapsedDays : null;
+    final historicalRemaining = historicalTotal - historicalCount;
+    final historicalDaysRemaining = historicalAverage != null && historicalRemaining > 0
+        ? (historicalRemaining / historicalAverage).ceil()
+        : null;
+    final targetDate = startDate.add(Duration(days: targetDurationDays - 1));
+    final daysUntilTarget = targetDate.difference(today).inDays + 1;
+    final daysAvailable = daysUntilTarget > 0 ? daysUntilTarget : 1;
+    final requiredUnitsPerDay = (remaining / daysAvailable).ceil();
+    final daysRemaining = remaining == 0 ? 0 : (remaining / requiredUnitsPerDay).ceil();
+    final projectedFinish = today.add(Duration(days: daysRemaining));
+    final calendarDaysRemaining = calendarAverage != null && historicalRemaining > 0
+        ? (historicalRemaining / calendarAverage).ceil()
+        : null;
 
     return ScheduleStatus(
       idealPlanDay: idealPlanDay,
@@ -85,6 +127,24 @@ class ScheduleCalculator {
       daysAheadBehind: daysAheadBehind,
       completed: false,
       projectedFinishDate: projectedFinish,
+      remainingUnits: remaining,
+      requiredUnitsPerDay: requiredUnitsPerDay,
+      targetDurationDays: targetDurationDays,
+      historicalChaptersPerDay: historicalAverage,
+      historicalProjectedFinishDate: historicalDaysRemaining == null
+          ? null
+          : today.add(Duration(days: historicalDaysRemaining)),
+      calendarChaptersPerDay: calendarAverage,
+      calendarProjectedFinishDate: calendarDaysRemaining == null
+          ? null
+          : today.add(Duration(days: calendarDaysRemaining)),
     );
+  }
+
+  double _median(List<int> values) {
+    final sorted = [...values]..sort();
+    final middle = sorted.length ~/ 2;
+    if (sorted.length.isOdd) return sorted[middle].toDouble();
+    return (sorted[middle - 1] + sorted[middle]) / 2;
   }
 }

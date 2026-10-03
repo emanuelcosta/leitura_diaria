@@ -6,6 +6,7 @@
 .DS_Store
 .atom/
 .build/
+build/
 .buildlog/
 .history
 .svn/
@@ -30,7 +31,10 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
-/build/
+build/
+!/build/
+!/build/web/
+!/build/web/**
 /coverage/
 
 # Symbolication related
@@ -40,11 +44,15 @@ app.*.symbols
 app.*.map.json
 
 # Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+/build/android/app/debug
+/build/android/app/profile
+/build/android/app/release
 senhas.md
 .env
 leituradiarianotifications-firebase-adminsdk-fbsvc-4596aa7992.json
 # Visual Studio local cache (indexes, Copilot state)
 .vs/
+.vercel
+.env*
+node_modules/
+build/*

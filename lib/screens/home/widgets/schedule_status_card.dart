@@ -5,8 +5,9 @@ import '../../../logic/schedule_calculator.dart';
 
 class ScheduleStatusCard extends StatelessWidget {
   final ScheduleStatus status;
+  final String unit;
 
-  const ScheduleStatusCard({super.key, required this.status});
+  const ScheduleStatusCard({super.key, required this.status, this.unit = 'capítulos'});
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +64,29 @@ class ScheduleStatusCard extends StatelessWidget {
             if (status.projectedFinishDate != null) ...[
               const SizedBox(height: 8),
               Text(
+                'Meta diária atual: ${status.requiredUnitsPerDay} $unit '
+                '(${status.remainingUnits} restantes)',
+              ),
+              Text(
                 'Previsão de conclusão: ${dateFormat.format(status.projectedFinishDate!)}',
                 style: const TextStyle(fontWeight: FontWeight.w600),
               ),
+              if (status.historicalChaptersPerDay != null &&
+                  status.historicalProjectedFinishDate != null)
+                Text(
+                  'Ritmo típico por dia de leitura: '
+                  '${status.historicalChaptersPerDay!.toStringAsFixed(1)} capítulos/dia — '
+                  'conclusão em '
+                  '${dateFormat.format(status.historicalProjectedFinishDate!)}',
+                ),
+              if (status.calendarChaptersPerDay != null &&
+                  status.calendarProjectedFinishDate != null)
+                Text(
+                  'Considerando todos os dias: '
+                  '${status.calendarChaptersPerDay!.toStringAsFixed(1)} capítulos/dia — '
+                  'conclusão em '
+                  '${dateFormat.format(status.calendarProjectedFinishDate!)}',
+                ),
             ],
           ],
         ),

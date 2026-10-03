@@ -14,6 +14,16 @@ import 'widgets/marker_names_section.dart';
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
+  Future<void> _editReadingEndDate(BuildContext context, SettingsProvider settings) async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: settings.readingEndDate ?? (settings.startDate ?? DateTime.now()).add(const Duration(days: 364)),
+      firstDate: settings.startDate ?? DateTime(2020),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) await settings.setReadingEndDate(picked);
+  }
+
   Future<void> _editStartDate(BuildContext context, SettingsProvider settings) async {
     final picked = await showDatePicker(
       context: context,
@@ -104,6 +114,17 @@ class SettingsScreen extends StatelessWidget {
             title: const Text('Data de início'),
             subtitle: Text(formattedDate),
             onTap: () => _editStartDate(context, settings),
+          ),
+          ListTile(
+            leading: const Icon(Icons.timelapse),
+            title: const Text('Data final da leitura'),
+            subtitle: Text(settings.readingEndDate == null
+                ? '-'
+                : '${settings.readingEndDate!.day.toString().padLeft(2, '0')}/'
+                    '${settings.readingEndDate!.month.toString().padLeft(2, '0')}/'
+                    '${settings.readingEndDate!.year} '
+                    '(${settings.readingDurationDays} dias)'),
+            onTap: () => _editReadingEndDate(context, settings),
           ),
           ListTile(
             leading: const Icon(Icons.menu_book_outlined),

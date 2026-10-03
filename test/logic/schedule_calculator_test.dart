@@ -64,22 +64,52 @@ void main() {
     expect(status.completionDate, DateTime(2026, 1, 4, 20, 0));
   });
 
-  test('projected finish date extrapolates from actual pace', () {
-    // day 1 (idealPlanDay=1), read 2 chapters in 1 day -> avgPerDay=2, remaining=10 -> 5 more days
+  test('projected finish date follows the configured target', () {
+    // 12 chapters in 12 days: with 6 days left, 10 remaining means 2/day.
     final status = calc.computeStatus(
       startDate: start,
-      today: DateTime(2026, 1, 1),
+      today: DateTime(2026, 1, 7),
       actualReadCount: 2,
+      targetDurationDays: 12,
     );
-    expect(status.projectedFinishDate, DateTime(2026, 1, 6));
+    expect(status.requiredUnitsPerDay, 2);
+    expect(status.remainingUnits, 10);
+    expect(status.projectedFinishDate, DateTime(2026, 1, 12));
   });
 
-  test('no projection when nothing read yet', () {
+  test('projection is available before any reading', () {
     final status = calc.computeStatus(
       startDate: start,
       today: DateTime(2026, 1, 1),
       actualReadCount: 0,
     );
-    expect(status.projectedFinishDate, isNull);
+    expect(status.requiredUnitsPerDay, 1);
+    expect(status.projectedFinishDate, DateTime(2026, 1, 13));
+  });
+
+  test('target shorter than remaining time increases the daily target', () {
+    final status = calc.computeStatus(
+      startDate: start,
+      today: DateTime(2026, 1, 1),
+      actualReadCount: 2,
+      targetDurationDays: 5,
+    );
+    expect(status.requiredUnitsPerDay, 2);
+    expect(status.projectedFinishDate, DateTime(2026, 1, 6));
+  });
+
+  test('calculates a second projection from the historical chapter pace', () {
+    final status = calc.computeStatus(
+      startDate: start,
+      today: DateTime(2026, 1, 5),
+      actualReadCount: 5,
+      targetDurationDays: 12,
+      activeReadingDays: 2,
+      historicalDailyCounts: [8, 1, 1, 1],
+    );
+    expect(status.historicalChaptersPerDay, 1);
+    expect(status.historicalProjectedFinishDate, DateTime(2026, 1, 12));
+    expect(status.calendarChaptersPerDay, 1);
+    expect(status.calendarProjectedFinishDate, DateTime(2026, 1, 12));
   });
 }

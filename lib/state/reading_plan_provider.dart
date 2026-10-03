@@ -7,6 +7,7 @@ import '../data/database/app_database.dart';
 import '../data/database/queries.dart';
 import '../data/database/seed_loader.dart';
 import '../data/reading_plan_meta.dart';
+import '../data/models/progress_mode.dart';
 import '../data/repositories/bible_text_repository.dart';
 import '../data/repositories/book_repository.dart';
 import '../data/repositories/chapter_repository.dart';
@@ -217,6 +218,7 @@ class ReadingPlanProvider extends ChangeNotifier {
     required DateTime startDate,
     required DateTime today,
     DateTime? lastReadAt,
+    int targetDurationDays = 365,
   }) {
     final calculator = ScheduleCalculator(
       planCumulative: meta.cumulativeByDay,
@@ -227,7 +229,62 @@ class ReadingPlanProvider extends ChangeNotifier {
       today: DateTime(today.year, today.month, today.day),
       actualReadCount: overallProgress.readCount,
       lastReadAt: lastReadAt,
+      targetDurationDays: targetDurationDays,
     );
+  }
+
+  Future<ScheduleStatus> computeScheduleStatusForProgress({
+    required DateTime startDate,
+    required DateTime today,
+    required ProgressMode mode,
+    required BibleTranslation translation,
+    required int targetDurationDays,
+    DateTime? lastReadAt,
+  }) async {
+    final dailyReadCounts = (await getReadCountsByDate()).values.toList();
+    final activeReadingDays = dailyReadCounts.length;
+    if (mode == ProgressMode.chapters) {
+      final calculator = ScheduleCalculator(
+        planCumulative: meta.cumulativeByDay,
+        totalPlanDays: meta.totalPlanDays,
+      );
+      return calculator.computeStatus(
+        startDate: startDate,
+        today: today,
+        actualReadCount: overallProgress.readCount,
+        lastReadAt: lastReadAt,
+        targetDurationDays: targetDurationDays,
+        historicalReadCount: overallProgress.readCount,
+        historicalTotalCount: meta.totalChapters,
+        activeReadingDays: activeReadingDays,
+        historicalDailyCounts: dailyReadCounts,
+      );
+    }
+    final progress = await getVerseProgress(translation);
+    final chapterCount = overallProgress.readCount;
+    final calculator = ScheduleCalculator(
+      planCumulative: _verseCumulative(progress.totalCount),
+      totalPlanDays: meta.totalPlanDays,
+    );
+    return calculator.computeStatus(
+      startDate: DateTime(startDate.year, startDate.month, startDate.day),
+      today: DateTime(today.year, today.month, today.day),
+      actualReadCount: progress.readCount,
+      lastReadAt: lastReadAt,
+      targetDurationDays: targetDurationDays,
+      historicalReadCount: chapterCount,
+      historicalTotalCount: meta.totalChapters,
+      activeReadingDays: activeReadingDays,
+      historicalDailyCounts: dailyReadCounts,
+    );
+  }
+
+  List<int> _verseCumulative(int totalVerses) {
+    final result = List<int>.filled(meta.totalPlanDays + 1, 0);
+    for (var day = 1; day <= meta.totalPlanDays; day++) {
+      result[day] = (totalVerses * day / meta.totalPlanDays).round();
+    }
+    return result;
   }
 
   int idealPlanDayFor(DateTime startDate, DateTime today) {
